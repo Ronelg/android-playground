@@ -1,0 +1,59 @@
+apply plugin: BuildPlugins.library
+apply plugin: BuildPlugins.kotlinAndroid
+apply plugin: BuildPlugins.kotlinAndroidExtensions
+
+android {
+    compileSdkVersion App.compileSdk
+
+    defaultConfig {
+        minSdkVersion App.minSdk
+        targetSdkVersion App.targetSdk
+
+        versionCode App.code
+        versionName App.name
+    }
+
+    compileOptions {
+        sourceCompatibility = App.javaVersion
+        targetCompatibility = App.javaVersion
+    }
+
+    kotlinOptions {
+        jvmTarget = App.javaVersion.toString()
+    }
+
+    viewBinding {
+        enabled = true
+    }
+}
+
+dependencies {
+    implementation(Libs.kotlin_stdlib_jdk7)
+    implementation(Libs.kotlinx_coroutines_core)
+    implementation(Libs.kotlinx_coroutines_android)
+
+    /* DFM */
+    implementation(Libs.com_google_android_play_core_ktx)
+
+    /* Jetpack */
+    implementation(Libs.navigation_fragment_ktx)
+    implementation(Libs.navigation_ui_ktx)
+    implementation(Libs.appcompat)
+    implementation(Libs.androidx_core_core_ktx)
+    implementation(Libs.constraintlayout)
+    implementation(Libs.lifecycle_extensions)
+    implementation(Libs.lifecycle_livedata_ktx)
+    implementation(Libs.lifecycle_viewmodel_ktx)
+    implementation(Libs.lifecycle_viewmodel_savedstate)
+    implementation("androidx.lifecycle:lifecycle-common-java8:2.2.0")
+    implementation(Libs.recyclerview)
+    implementation(Libs.activity_ktx)
+    implementation(Libs.fragment_ktx)
+
+    /* UI */
+    implementation(Libs.groupie)
+    implementation(Libs.groupie_kotlin_android_extensions)
+
+    /* Misc */
+    implementation(Libs.timberkt)
+}

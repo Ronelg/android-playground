@@ -1,0 +1,78 @@
+apply plugin: BuildPlugins.application
+apply plugin: BuildPlugins.kotlinAndroid
+apply plugin: BuildPlugins.kotlinAndroidExtensions
+apply plugin: BuildPlugins.kotlinSafeArgs
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+
+android {
+    compileSdkVersion App.compileSdk
+
+    defaultConfig {
+        minSdkVersion App.minSdk
+        targetSdkVersion App.targetSdk
+
+        applicationId App.applicationId
+        versionCode App.code
+        versionName App.name
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled = false
+            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility = App.javaVersion
+        targetCompatibility = App.javaVersion
+    }
+
+    kotlinOptions {
+        jvmTarget = App.javaVersion.toString()
+    }
+
+    viewBinding {
+        enabled = true
+    }
+
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/license.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/notice.txt'
+        exclude 'META-INF/ASL2.0'
+        exclude("META-INF/*.kotlin_module")
+    }
+}
+
+dependencies {
+    implementation(project(Modules.common))
+//    implementation(project(Modules.googlePhotos))
+
+    implementation(Libs.kotlin_stdlib_jdk7)
+    implementation(Libs.kotlinx_coroutines_core)
+    implementation(Libs.kotlinx_coroutines_android)
+
+    /* DFM */
+    implementation(Libs.com_google_android_play_core_ktx)
+
+    /* Jetpack */
+    implementation(Libs.navigation_fragment_ktx)
+    implementation(Libs.navigation_ui_ktx)
+    implementation(Libs.appcompat)
+    implementation(Libs.androidx_core_core_ktx)
+    implementation(Libs.constraintlayout)
+    implementation(Libs.lifecycle_extensions)
+    implementation(Libs.lifecycle_livedata_ktx)
+    implementation(Libs.lifecycle_viewmodel_ktx)
+    implementation(Libs.lifecycle_runtime_ktx)
+    implementation(Libs.material)
+
+    /* Misc */
+    implementation(Libs.timberkt)
+}
