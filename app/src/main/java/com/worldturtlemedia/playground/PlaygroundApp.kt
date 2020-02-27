@@ -2,6 +2,7 @@ package com.worldturtlemedia.playground
 
 import android.util.Log
 import com.google.android.play.core.splitcompat.SplitCompatApplication
+import com.google.firebase.crashlytics.core.CrashlyticsCore
 import com.worldturtlemedia.playground.common.di.FakeDI
 import timber.log.Timber
 

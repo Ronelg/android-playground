@@ -1,11 +1,9 @@
 package com.worldturtlemedia.playground.common.base.ui.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.github.ajalt.timberkt.i
 import com.worldturtlemedia.playground.common.ktx.mediatorLiveDataOf
+import com.worldturtlemedia.playground.common.ktx.observeProperty
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.channels.actor
@@ -26,8 +24,16 @@ abstract class StateViewModel<S : State>(initialState: S) : ViewModel() {
      * Convenient accessor to get the current value of the state.  We know the state cannot be
      * null, because we pass an initial state in the constructor.
      */
-    protected val currentState: S
+    val currentState: S
         get() = state.value!!
+
+    fun observe(owner: LifecycleOwner, block: (state: S) -> Unit) = state.observe(owner, block)
+
+    fun <Property> observeProperty(
+        owner: LifecycleOwner,
+        property: (S) -> Property,
+        onChange: (value: Property) -> Unit
+    ) = state.observeProperty(owner, property, onChange)
 
     /**
      * Create an [actor] that will consume each [Update], invoke the lambda, then update the state

@@ -27,6 +27,6 @@ abstract class BaseFragment<B: ViewBinding>(
     protected open fun observeViewModel() {}
 
     protected fun withBinding(block: B.() -> Unit) {
-        withBinding(block)
+        binding.apply(block)
     }
 }

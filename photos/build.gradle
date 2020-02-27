@@ -13,7 +13,7 @@ android {
         versionCode App.code
         versionName App.name
 
-        buildConfigField "String", "GOOGLE_API_AUTH_CODE", "\"\""
+        buildConfigField "String", "GOOGLE_API_AUTH_CODE", "\"421255191555-32svvvtis87a7k099j61okpbshla8tni.apps.googleusercontent.com\""
     }
 
     compileOptions {

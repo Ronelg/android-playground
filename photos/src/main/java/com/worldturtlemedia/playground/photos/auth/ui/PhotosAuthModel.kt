@@ -6,6 +6,7 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.worldturtlemedia.playground.common.base.ui.viewmodel.State
 import com.worldturtlemedia.playground.common.base.ui.viewmodel.StateViewModel
+import com.worldturtlemedia.playground.common.core.SingleEvent
 import com.worldturtlemedia.playground.photos.auth.data.GoogleAuthRepoFactory
 import com.worldturtlemedia.playground.photos.auth.data.GoogleAuthState
 import kotlinx.coroutines.CoroutineScope
@@ -18,7 +19,7 @@ class PhotosAuthModel : StateViewModel<PhotosAuthState>(PhotosAuthState()) {
 
     init {
         addStateSource(googleAuthRepo.state.asLiveData()) { auth ->
-            copy(auth = auth)
+            copy(auth = auth, authEvent = SingleEvent(auth))
         }
     }
 
@@ -37,6 +38,7 @@ class PhotosAuthModel : StateViewModel<PhotosAuthState>(PhotosAuthState()) {
 
 data class PhotosAuthState(
     val auth: GoogleAuthState = GoogleAuthState.Unauthenticated,
+    val authEvent: SingleEvent<GoogleAuthState>? = null,
     val isShowingAuthDialog: Boolean = false
 ) : State {
 

@@ -6,6 +6,7 @@
     <color name="colorPrimaryLighter">#1E2736</color>
     <color name="colorAccent">#00BEAC</color>
 
+    <color name="dialogBackground">#F3F3F3</color>
     <color name="black">#000</color>
     <color name="white">#fff</color>
     <color name="grey">#DDDDDD</color>

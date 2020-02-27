@@ -2,8 +2,8 @@ apply plugin: BuildPlugins.application
 apply plugin: BuildPlugins.kotlinAndroid
 apply plugin: BuildPlugins.kotlinAndroidExtensions
 apply plugin: BuildPlugins.kotlinSafeArgs
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
+apply plugin: BuildPlugins.firebaseGoogleServices
+apply plugin: BuildPlugins.crashlytics
 
 android {
     compileSdkVersion App.compileSdk
@@ -18,6 +18,10 @@ android {
     }
 
     buildTypes {
+        debug {
+            ext.enableCrashlytics = false
+        }
+
         release {
             minifyEnabled = false
             proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
@@ -52,7 +56,7 @@ android {
 
 dependencies {
     implementation(project(Modules.common))
-//    implementation(project(Modules.googlePhotos))
+    implementation(project(Modules.googlePhotos))
 
     implementation(Libs.kotlin_stdlib_jdk7)
     implementation(Libs.kotlinx_coroutines_core)
@@ -75,4 +79,6 @@ dependencies {
 
     /* Misc */
     implementation(Libs.timberkt)
+    implementation(Libs.firebase_crashlytics)
+    debugImplementation(Libs.leakcanary_android)
 }

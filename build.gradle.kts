@@ -10,6 +10,8 @@ buildscript {
         classpath(Libs.com_android_tools_build_gradle)
         classpath(Libs.kotlin_gradle_plugin)
         classpath(Libs.navigation_safe_args_gradle_plugin)
+        classpath(Libs.google_services)
+        classpath(Libs.firebase_crashlytics_gradle)
     }
 }
 

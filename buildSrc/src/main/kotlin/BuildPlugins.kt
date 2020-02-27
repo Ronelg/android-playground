@@ -9,4 +9,7 @@ object BuildPlugins {
     const val dynamicFeature = "com.android.dynamic-feature"
 
     const val kotlinSafeArgs = "androidx.navigation.safeargs.kotlin"
+
+    const val firebaseGoogleServices = "com.google.gms.google-services"
+    const val crashlytics = "com.google.firebase.crashlytics"
 }

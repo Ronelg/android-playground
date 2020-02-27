@@ -9,5 +9,14 @@
         android:id="@+id/mainFragment"
         android:name="com.worldturtlemedia.playground.ui.main.MainFragment"
         android:label="MainFragment"
-        tools:layout="@layout/main_fragment" />
+        tools:layout="@layout/main_fragment">
+        <action
+            android:id="@+id/toGooglePhotosFeature"
+            app:destination="@id/nav_google_photos"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+    <include app:graph="@navigation/nav_google_photos" />
 </navigation>

@@ -143,17 +143,29 @@ object Libs {
             "com.google.photos.library:google-photos-library-client:" +
             Versions.google_photos_library_client
 
+    const val firebase_crashlytics_gradle: String =
+            "com.google.firebase:firebase-crashlytics-gradle:" +
+            Versions.firebase_crashlytics_gradle
+
+    const val firebase_crashlytics: String = "com.google.firebase:firebase-crashlytics:" +
+            Versions.firebase_crashlytics
+
+    /**
+     * http://github.com/square/leakcanary/
+     */
+    const val leakcanary_android: String = "com.squareup.leakcanary:leakcanary-android:" +
+            Versions.leakcanary_android
+
     const val play_services_auth: String = "com.google.android.gms:play-services-auth:" +
             Versions.play_services_auth
-
-    const val circularimageview: String = "com.mikhaellopez:circularimageview:" +
-            Versions.circularimageview
 
     /**
      * http://tools.android.com
      */
     const val constraintlayout: String = "androidx.constraintlayout:constraintlayout:" +
             Versions.constraintlayout
+
+    const val google_services: String = "com.google.gms:google-services:" + Versions.google_services
 
     /**
      * https://developer.android.com/jetpack/androidx

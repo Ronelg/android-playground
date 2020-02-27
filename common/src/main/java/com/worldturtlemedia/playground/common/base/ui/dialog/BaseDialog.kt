@@ -1,5 +1,6 @@
 package com.worldturtlemedia.playground.common.base.ui.dialog
 
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,14 +15,16 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.LifecycleOwner
 import androidx.viewbinding.ViewBinding
 import com.worldturtlemedia.playground.common.R
 import com.worldturtlemedia.playground.common.ktx.simpleName
 
-typealias OnCancel = () -> Unit
 typealias OnConfirm<T> = (T) -> Unit
+typealias OnCancel = () -> Unit
+typealias OnDismiss = () -> Unit
 
-abstract class BaseDialog<B : ViewBinding, T : Any>(
+abstract class BaseDialog<B : ViewBinding, T>(
     @LayoutRes private val layout: Int
 ) : AppCompatDialogFragment() {
 
@@ -35,8 +38,14 @@ abstract class BaseDialog<B : ViewBinding, T : Any>(
 
     open val isDismissible: Boolean = true
 
+    protected val owner: LifecycleOwner
+        get() = viewLifecycleOwner
+
     private var onConfirmListener: OnConfirm<T> = {}
     private var onCancelListener: OnCancel = {}
+    private var onDismissListener: OnDismiss = {}
+
+    private var shouldTriggerDismissListener: Boolean = true
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -57,9 +66,31 @@ abstract class BaseDialog<B : ViewBinding, T : Any>(
         }
 
         setupViews()
+        initViewModel()
+    }
+
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+
+
+        if (shouldTriggerDismissListener) {
+            onDismissListener()
+        }
     }
 
     protected open fun setupViews() {}
+
+    protected open fun initViewModel() {}
+
+    protected fun withBinding(block: B.() -> Unit) {
+        binding.apply(block)
+    }
+
+    fun onConfirm(listener: OnConfirm<T>) = apply { onConfirmListener = listener }
+
+    fun onCancel(listener: OnCancel) = apply { onCancelListener = listener }
+
+    fun onDismiss(listener: OnDismiss) = apply { onDismissListener = listener }
 
     fun show(fragmentManager: FragmentManager) = apply { show(fragmentManager, simpleName) }
 
@@ -69,16 +100,21 @@ abstract class BaseDialog<B : ViewBinding, T : Any>(
 
     protected fun confirm(result: T) {
         onConfirmListener(result)
-        close()
+        silentClose()
     }
 
     fun cancel() {
         onCancelListener()
-        close()
+        silentClose()
     }
 
     fun close() {
         dismiss()
+    }
+
+    private fun silentClose() {
+        shouldTriggerDismissListener = false
+        close()
     }
 }
 

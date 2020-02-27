@@ -34,11 +34,17 @@ object Versions {
 
     const val google_photos_library_client: String = "1.4.0"
 
+    const val firebase_crashlytics_gradle: String = "2.0.0-beta02"
+
+    const val firebase_crashlytics: String = "17.0.0-beta01"
+
+    const val leakcanary_android: String = "2.2"
+
     const val play_services_auth: String = "17.0.0"
 
-    const val circularimageview: String = "4.2.0"
-
     const val constraintlayout: String = "1.1.3"
+
+    const val google_services: String = "4.3.3"
 
     const val activity_ktx: String = "1.1.0"
 
