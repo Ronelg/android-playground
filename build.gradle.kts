@@ -28,7 +28,7 @@ allprojects {
 
 tasks.withType<KotlinCompile> {
     kotlinOptions {
-        freeCompilerArgs = freeCompilerArgs + "-XXLanguage:+NewInference"
+        freeCompilerArgs = freeCompilerArgs + listOf("-XXLanguage:+NewInference", "-Xuse-experimental=kotlin.Experimental")
     }
 }
 

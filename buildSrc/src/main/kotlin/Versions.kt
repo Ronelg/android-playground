@@ -30,9 +30,13 @@ object Versions {
 
     const val de_fayard_buildsrcversions_gradle_plugin: String = "0.7.0"
 
+    const val inline_activity_result_kotlin: String = "1.0.3"
+
     const val google_photos_library_client: String = "1.4.0"
 
     const val play_services_auth: String = "17.0.0"
+
+    const val circularimageview: String = "4.2.0"
 
     const val constraintlayout: String = "1.1.3"
 
@@ -52,14 +56,16 @@ object Versions {
 
     const val timberkt: String = "1.5.1"
 
-    const val aapt2: String = "3.6.0-rc03-6040484"
+    const val aapt2: String = "3.6.0-6040484"
+
+    const val coil: String = "0.9.5"
 
     /**
      * Current version: "5.6.4"
      * See issue 19: How to update Gradle itself?
      * https://github.com/jmfayard/buildSrcVersions/issues/19
      */
-    const val gradleLatestVersion: String = "6.2"
+    const val gradleLatestVersion: String = "6.2.1"
 }
 
 /**
@@ -68,4 +74,4 @@ object Versions {
  */
 val PluginDependenciesSpec.buildSrcVersions: PluginDependencySpec
     inline get() =
-        id("de.fayard.buildSrcVersions").version(Versions.de_fayard_buildsrcversions_gradle_plugin)
+            id("de.fayard.buildSrcVersions").version(Versions.de_fayard_buildsrcversions_gradle_plugin)

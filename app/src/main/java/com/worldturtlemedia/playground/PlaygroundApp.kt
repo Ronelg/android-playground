@@ -2,6 +2,7 @@ package com.worldturtlemedia.playground
 
 import android.util.Log
 import com.google.android.play.core.splitcompat.SplitCompatApplication
+import com.worldturtlemedia.playground.common.di.FakeDI
 import timber.log.Timber
 
 class PlaygroundApp : SplitCompatApplication() {
@@ -10,6 +11,8 @@ class PlaygroundApp : SplitCompatApplication() {
         super.onCreate()
 
         Timber.plant(if (BuildConfig.DEBUG) Timber.DebugTree() else releaseTree)
+
+        FakeDI.init(this)
     }
 
     private val releaseTree = object: Timber.Tree() {

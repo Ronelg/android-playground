@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_google_photos"
+    app:startDestination="@id/photosListFragment">
+
+    <fragment
+        android:id="@+id/photosListFragment"
+        android:name="com.worldturtlemedia.playground.photos.list.PhotosListFragment"
+        android:label=""
+        tools:layout="@layout/photos_list_fragment" />
+</navigation>

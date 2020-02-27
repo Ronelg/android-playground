@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">playground</string>
+    <string name="title_activity_main">Android Playground</string>
 </resources>

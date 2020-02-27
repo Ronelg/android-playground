@@ -46,5 +46,5 @@ class FragmentViewBindingDelegate<T : ViewBinding>(
     }
 }
 
-fun <T : ViewBinding> Fragment.viewBinding(viewBindingFactory: (View) -> T) =
+fun <T : ViewBinding> Fragment.viewBinding(viewBindingFactory: (View) -> T): ReadOnlyProperty<Fragment, T> =
     FragmentViewBindingDelegate(this, viewBindingFactory)

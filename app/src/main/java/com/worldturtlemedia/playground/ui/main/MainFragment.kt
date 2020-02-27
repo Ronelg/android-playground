@@ -5,12 +5,13 @@ import com.worldturtlemedia.playground.common.base.ui.BaseFragment
 import com.worldturtlemedia.playground.common.base.ui.viewbinding.viewBinding
 import com.worldturtlemedia.playground.common.ktx.onClick
 import com.worldturtlemedia.playground.databinding.MainFragmentBinding
+import com.worldturtlemedia.playground.databinding.MainFragmentBinding.bind
 
-class MainFragment : BaseFragment(R.layout.main_fragment) {
+class MainFragment : BaseFragment<MainFragmentBinding>(R.layout.main_fragment) {
 
-    private val binding by viewBinding(MainFragmentBinding::bind)
+    override val binding: MainFragmentBinding by viewBinding { bind(it) }
 
-    override fun setupViews() = with(binding) {
+    override fun setupViews() = withBinding {
         btnGooglePhotos.onClick { }
     }
 }

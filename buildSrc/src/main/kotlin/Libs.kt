@@ -11,8 +11,8 @@ object Libs {
      * https://github.com/Kotlin/kotlinx.coroutines
      */
     const val kotlinx_coroutines_android: String =
-        "org.jetbrains.kotlinx:kotlinx-coroutines-android:" +
-                Versions.org_jetbrains_kotlinx_kotlinx_coroutines
+            "org.jetbrains.kotlinx:kotlinx-coroutines-android:" +
+            Versions.org_jetbrains_kotlinx_kotlinx_coroutines
 
     /**
      * https://github.com/Kotlin/kotlinx.coroutines
@@ -24,14 +24,14 @@ object Libs {
      * https://kotlinlang.org/
      */
     const val kotlin_android_extensions: String =
-        "org.jetbrains.kotlin:kotlin-android-extensions:" + Versions.org_jetbrains_kotlin
+            "org.jetbrains.kotlin:kotlin-android-extensions:" + Versions.org_jetbrains_kotlin
 
     /**
      * https://kotlinlang.org/
      */
     const val kotlin_android_extensions_runtime: String =
-        "org.jetbrains.kotlin:kotlin-android-extensions-runtime:" +
-                Versions.org_jetbrains_kotlin
+            "org.jetbrains.kotlin:kotlin-android-extensions-runtime:" +
+            Versions.org_jetbrains_kotlin
 
     /**
      * https://kotlinlang.org/
@@ -55,13 +55,19 @@ object Libs {
      * https://developer.android.com/topic/libraries/architecture/index.html
      */
     const val navigation_safe_args_gradle_plugin: String =
-        "androidx.navigation:navigation-safe-args-gradle-plugin:" + Versions.androidx_navigation
+            "androidx.navigation:navigation-safe-args-gradle-plugin:" + Versions.androidx_navigation
 
     /**
      * https://developer.android.com/topic/libraries/architecture/index.html
      */
     const val navigation_ui_ktx: String = "androidx.navigation:navigation-ui-ktx:" +
             Versions.androidx_navigation
+
+    /**
+     * https://developer.android.com/topic/libraries/architecture/index.html
+     */
+    const val lifecycle_common_java8: String = "androidx.lifecycle:lifecycle-common-java8:" +
+            Versions.androidx_lifecycle
 
     /**
      * https://developer.android.com/topic/libraries/architecture/index.html
@@ -91,7 +97,7 @@ object Libs {
      * https://developer.android.com/topic/libraries/architecture/index.html
      */
     const val lifecycle_viewmodel_savedstate: String =
-        "androidx.lifecycle:lifecycle-viewmodel-savedstate:" + Versions.androidx_lifecycle
+            "androidx.lifecycle:lifecycle-viewmodel-savedstate:" + Versions.androidx_lifecycle
 
     /**
      * https://github.com/lisawray/groupie
@@ -102,7 +108,7 @@ object Libs {
      * https://github.com/lisawray/groupie
      */
     const val groupie_kotlin_android_extensions: String =
-        "com.xwray:groupie-kotlin-android-extensions:" + Versions.com_xwray
+            "com.xwray:groupie-kotlin-android-extensions:" + Versions.com_xwray
 
     const val com_google_android_play_core_ktx: String = "com.google.android.play:core-ktx:" +
             Versions.com_google_android_play_core_ktx
@@ -120,18 +126,28 @@ object Libs {
             Versions.androidx_core_core_ktx
 
     const val de_fayard_buildsrcversions_gradle_plugin: String =
-        "de.fayard.buildSrcVersions:de.fayard.buildSrcVersions.gradle.plugin:" +
-                Versions.de_fayard_buildsrcversions_gradle_plugin
+            "de.fayard.buildSrcVersions:de.fayard.buildSrcVersions.gradle.plugin:" +
+            Versions.de_fayard_buildsrcversions_gradle_plugin
+
+    /**
+     * https://github.com/florent37/InlineActivityResult
+     */
+    const val inline_activity_result_kotlin: String =
+            "com.github.florent37:inline-activity-result-kotlin:" +
+            Versions.inline_activity_result_kotlin
 
     /**
      * http://developers.google.com/photos
      */
     const val google_photos_library_client: String =
-        "com.google.photos.library:google-photos-library-client:" +
-                Versions.google_photos_library_client
+            "com.google.photos.library:google-photos-library-client:" +
+            Versions.google_photos_library_client
 
     const val play_services_auth: String = "com.google.android.gms:play-services-auth:" +
             Versions.play_services_auth
+
+    const val circularimageview: String = "com.mikhaellopez:circularimageview:" +
+            Versions.circularimageview
 
     /**
      * http://tools.android.com
@@ -180,4 +196,9 @@ object Libs {
      * https://developer.android.com/studio
      */
     const val aapt2: String = "com.android.tools.build:aapt2:" + Versions.aapt2
+
+    /**
+     * https://github.com/coil-kt/coil
+     */
+    const val coil: String = "io.coil-kt:coil:" + Versions.coil
 }
