@@ -29,6 +29,8 @@ class GoogleAuthRepo(
         val SCOPE_PHOTOS_READONLY = Scope("https://www.googleapis.com/auth/photoslibrary.readonly")
     }
 
+    override val debugMode: Boolean = true
+
     private val signInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
         .requestEmail()
         .requestProfile()

@@ -17,13 +17,25 @@ android {
         versionName App.name
     }
 
+    signingConfigs {
+        // Uncomment if you don't need to sign, and don't have the Secrets class
+        release {
+            storeFile file(Secrets.keystore)
+            keyAlias Secrets.keyAlias
+            storePassword Secrets.keystorePassword
+            keyPassword Secrets.keyPassword
+        }
+    }
+
     buildTypes {
         debug {
             ext.enableCrashlytics = false
+            applicationIdSuffix ".dev"
         }
 
         release {
             minifyEnabled = false
+            signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
         }
     }

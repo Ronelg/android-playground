@@ -13,25 +13,4 @@ import com.worldturtlemedia.playground.photos.databinding.ListFilterFragmentBind
 class ListFilterFragment : BaseFragment<ListFilterFragmentBinding>(R.layout.list_filter_fragment) {
 
     override val binding: ListFilterFragmentBinding by viewBinding { bind(it) }
-
-    private val authViewModel: PhotosAuthModel by activityViewModels()
-
-    override fun setupViews() {
-    }
-
-    override fun observeViewModel() {
-        if (!authViewModel.currentState.isAuthenticated) {
-            showDialog(ConnectGooglePhotosDialog())
-        }
-
-        authViewModel.observe(owner) { state ->
-            // If there is an error, display the error
-
-            // If user is not authenticated display that state
-
-            // Or display the list
-        }
-
-        // Have another viewmodel that fetches the data from GooglePhotos and displays the list
-    }
 }

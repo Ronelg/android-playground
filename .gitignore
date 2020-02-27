@@ -1,3 +1,10 @@
+# Secrets
+buildSrc/src/main/kotlin/Secrets.kt
+google-services.json
+private_key.pepk
+playground.jks
+./Playground
+
 # Built application files
 *.apk
 *.ap_
@@ -10,6 +17,7 @@
 *.class
 
 buildSrc/build
+
 
 # Generated files
 bin/
@@ -59,9 +67,6 @@ captures/
 
 # External native build folder generated in Android Studio 2.2 and later
 .externalNativeBuild
-
-# Google Services (e.g. APIs or Firebase)
-google-services.json
 
 # Freeline
 freeline.py
