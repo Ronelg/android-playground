@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/toolbar_height"
+    android:background="@color/backgroundLighter"
+    android:orientation="horizontal"
+    android:id="@+id/container"
+    >
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/btnAll"
+            android:text="All"
+            style="@style/MediaTypeFilterText"
+            />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/btnVideos"
+            android:text="Videos"
+            style="@style/MediaTypeFilterText"
+            />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/btnPhotos"
+            android:text="Photos"
+            style="@style/MediaTypeFilterText"
+            />
+
+</LinearLayout>

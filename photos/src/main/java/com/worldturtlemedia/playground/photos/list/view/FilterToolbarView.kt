@@ -22,8 +22,4 @@ class FilterToolbarView : ConstraintLayout, Binding<FilterToolbarViewBinding> {
     override val binding: FilterToolbarViewBinding by lazy { bind(this) }
 
     var onFilterClicked: () -> Unit = {}
-
-    override fun onFinishInflate() {
-        super.onFinishInflate()
-    }
 }

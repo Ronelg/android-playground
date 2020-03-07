@@ -69,7 +69,10 @@ class GoogleAuthRepo(
         } catch (error: Throwable) {
             e(error) { "Sign in error" }
 
-            if (error is InlineActivityResultException && error.resultCode == Activity.RESULT_CANCELED) null
+            if (error is InlineActivityResultException && error.resultCode == Activity.RESULT_CANCELED) {
+                e { "Sign in was cancelled" }
+                null
+            }
             else GoogleAuthState.Error(error)
         }
 
