@@ -10,9 +10,8 @@ import com.worldturtlemedia.playground.photos.auth.data.GoogleAuthState
 import com.worldturtlemedia.playground.photos.databinding.ConnectGooglePhotosDialogBinding
 import com.worldturtlemedia.playground.photos.databinding.ConnectGooglePhotosDialogBinding.bind
 
-class ConnectGooglePhotosDialog : SimpleDialog<ConnectGooglePhotosDialogBinding>(
-    R.layout.connect_google_photos_dialog
-) {
+class ConnectGooglePhotosDialog :
+    SimpleDialog<ConnectGooglePhotosDialogBinding>(R.layout.connect_google_photos_dialog) {
 
     override val binding: ConnectGooglePhotosDialogBinding by viewBinding { bind(it) }
 

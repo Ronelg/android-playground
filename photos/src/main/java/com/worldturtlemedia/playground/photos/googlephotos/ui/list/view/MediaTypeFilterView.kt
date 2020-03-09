@@ -1,4 +1,4 @@
-package com.worldturtlemedia.playground.photos.list.view
+package com.worldturtlemedia.playground.photos.googlephotos.ui.list.view
 
 import android.content.Context
 import android.util.AttributeSet

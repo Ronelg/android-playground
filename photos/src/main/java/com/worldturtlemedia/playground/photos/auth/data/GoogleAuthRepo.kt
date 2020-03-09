@@ -67,13 +67,13 @@ class GoogleAuthRepo(
             // https://developers.google.com/android/reference/com/google/android/gms/auth/api/signin/GoogleSignIn#public-static-taskgooglesigninaccount-getsignedinaccountfromintent-intent-data
             GoogleAuthState.from(signInTask.result)
         } catch (error: Throwable) {
-            e(error) { "Sign in error" }
-
             if (error is InlineActivityResultException && error.resultCode == Activity.RESULT_CANCELED) {
                 e { "Sign in was cancelled" }
                 null
+            } else {
+                e(error) { "Sign in error" }
+                GoogleAuthState.Error(error)
             }
-            else GoogleAuthState.Error(error)
         }
 
         setState(newState)

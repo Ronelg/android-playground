@@ -39,3 +39,6 @@ data class GoogleAuthUser(
     val email: String,
     val avatarUrl: Uri?
 )
+
+val GoogleAuthState.errorOrNull: String?
+    get() = if (this is GoogleAuthState.Error) this.exception.message else null

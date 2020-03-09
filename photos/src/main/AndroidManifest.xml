@@ -1,2 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.worldturtlemedia.playground.photos" />
+    package="com.worldturtlemedia.playground.photos">
+
+    <application>
+        <activity
+            android:name=".GooglePhotosActivity"
+            android:exported="true"
+            android:label="Google Photos"
+            android:theme="@style/AppTheme.NoActionBar" />
+    </application>
+</manifest>

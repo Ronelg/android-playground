@@ -7,7 +7,21 @@
 
     <fragment
         android:id="@+id/photosListFragment"
-        android:name="com.worldturtlemedia.playground.photos.list.PhotosListFragment"
+        android:name="com.worldturtlemedia.playground.photos.googlephotos.ui.list.PhotosListFragment"
         android:label=""
-        tools:layout="@layout/photos_list_fragment" />
+        tools:layout="@layout/photos_list_fragment" >
+        <action
+            android:id="@+id/toFilterFragment"
+            app:destination="@id/listFilterFragment"
+            app:enterAnim="@anim/slide_in_up"
+            app:exitAnim="@anim/slide_out_down"
+            app:popEnterAnim="@anim/slide_in_up"
+            app:popExitAnim="@anim/slide_out_down"
+            />
+    </fragment>
+    <fragment
+        android:id="@+id/listFilterFragment"
+        android:name="com.worldturtlemedia.playground.photos.googlephotos.ui.filter.ListFilterFragment"
+        tools:layout="@layout/list_filter_fragment"
+        android:label="ListFilterFragment" />
 </navigation>

@@ -1,0 +1,32 @@
+package com.worldturtlemedia.playground.photos.auth.ui.view
+
+import android.content.Context
+import android.util.AttributeSet
+import androidx.constraintlayout.widget.ConstraintLayout
+import com.worldturtlemedia.playground.common.base.ui.viewbinding.Binding
+import com.worldturtlemedia.playground.common.ktx.onClick
+import com.worldturtlemedia.playground.photos.R
+import com.worldturtlemedia.playground.photos.databinding.UnauthenticatedStubBinding
+import com.worldturtlemedia.playground.photos.databinding.UnauthenticatedStubBinding.bind
+
+class UnauthenticatedView : ConstraintLayout, Binding<UnauthenticatedStubBinding> {
+
+    constructor(context: Context) : super(context)
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
+            super(context, attrs, defStyleAttr)
+
+    init {
+        inflate(context, R.layout.unauthenticated_stub, this)
+    }
+
+    override val binding: UnauthenticatedStubBinding by lazy { bind(this) }
+
+    var onRetry: () -> Unit = {}
+
+    override fun onFinishInflate() {
+        super.onFinishInflate()
+
+        binding.btnRetry.onClick(onRetry)
+    }
+}

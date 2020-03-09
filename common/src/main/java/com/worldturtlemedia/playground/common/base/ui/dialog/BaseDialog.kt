@@ -22,7 +22,6 @@ import com.worldturtlemedia.playground.common.ktx.simpleName
 
 typealias OnConfirm<T> = (T) -> Unit
 typealias OnCancel = () -> Unit
-typealias OnDismiss = () -> Unit
 
 abstract class BaseDialog<B : ViewBinding, T>(
     @LayoutRes private val layout: Int
@@ -43,7 +42,7 @@ abstract class BaseDialog<B : ViewBinding, T>(
 
     private var onConfirmListener: OnConfirm<T> = {}
     private var onCancelListener: OnCancel = {}
-    private var onDismissListener: OnDismiss = {}
+    private var onDismissListener: OnCancel = {}
 
     private var shouldTriggerDismissListener: Boolean = true
 
@@ -90,7 +89,12 @@ abstract class BaseDialog<B : ViewBinding, T>(
 
     fun onCancel(listener: OnCancel) = apply { onCancelListener = listener }
 
-    fun onDismiss(listener: OnDismiss) = apply { onDismissListener = listener }
+    fun onDismiss(listener: OnCancel) = apply { onDismissListener = listener }
+
+    fun onDismissOrCancel(listener: OnCancel) = apply {
+        onDismissListener = listener
+        onCancelListener = listener
+    }
 
     fun show(fragmentManager: FragmentManager) = apply { show(fragmentManager, simpleName) }
 

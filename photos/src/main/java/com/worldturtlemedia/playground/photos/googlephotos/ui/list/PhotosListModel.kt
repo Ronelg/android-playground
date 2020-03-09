@@ -1,8 +1,8 @@
-package com.worldturtlemedia.playground.photos.list
+package com.worldturtlemedia.playground.photos.googlephotos.ui.list
 
 import com.worldturtlemedia.playground.common.base.ui.viewmodel.State
 import com.worldturtlemedia.playground.common.base.ui.viewmodel.StateViewModel
-import com.worldturtlemedia.playground.photos.list.view.MediaTypeFilter
+import com.worldturtlemedia.playground.photos.googlephotos.ui.list.view.MediaTypeFilter
 
 class PhotosListModel : StateViewModel<PhotosListState>(PhotosListState()) {
 

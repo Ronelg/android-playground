@@ -2,4 +2,9 @@
 <resources>
     <string name="title_activity_google_photos">Google Photos</string>
     <string name="google_auth_email_display">Connected to Google Photos as %1s</string>
+    <string name="no_filters_selected">No Filters Selected</string>
+    <plurals name="apply_filter">
+        <item quantity="one">Apply %1d Filter</item>
+        <item quantity="other">Apply %1d Filters</item>
+    </plurals>
 </resources>

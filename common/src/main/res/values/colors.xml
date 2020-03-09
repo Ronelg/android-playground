@@ -5,10 +5,13 @@
     <color name="colorPrimaryDarker">#062233</color>
     <color name="colorPrimaryLighter">#1E2736</color>
     <color name="colorAccent">#00BEAC</color>
+    <color name="colorAccentLight">#0EB3A3</color>
+    <color name="colorAccentDark">#07453F</color>
 
     <color name="dialogBackground">#F3F3F3</color>
     <color name="black">#000</color>
     <color name="white">#fff</color>
     <color name="grey">#DDDDDD</color>
     <color name="greyDark">#70616161</color>
+    <color name="red">#f44336</color>
 </resources>
