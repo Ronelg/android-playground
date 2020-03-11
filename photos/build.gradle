@@ -58,13 +58,15 @@ dependencies {
     implementation(Libs.groupie_kotlin_android_extensions)
     implementation(Libs.coil)
     implementation(Libs.inline_activity_result_kotlin)
-    implementation(Libs.google_photos_library_client)
+
+    implementation(Libs.retrofit)
     implementation(Libs.play_services_auth)
 
-    implementation 'io.grpc:grpc-netty:1.27.1'
-    implementation 'io.grpc:grpc-protobuf:1.27.1'
-    implementation 'io.grpc:grpc-stub:1.27.1'
-    implementation 'io.grpc:grpc-okhttp:1.27.1'
+    implementation(Libs.google_photos_library_client)
+    implementation(Libs.grpc_netty)
+    implementation(Libs.grpc_protobuf)
+    implementation(Libs.grpc_stub)
+    implementation(Libs.grpc_okhttp)
 
     /* Misc */
     implementation(Libs.timberkt)

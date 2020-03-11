@@ -220,6 +220,11 @@ object Libs {
     const val material: String = "com.google.android.material:material:" + Versions.material
 
     /**
+     * https://github.com/square/retrofit/
+     */
+    const val retrofit: String = "com.squareup.retrofit2:retrofit:" + Versions.retrofit
+
+    /**
      * https://github.com/ajalt/timberkt
      */
     const val timberkt: String = "com.github.ajalt:timberkt:" + Versions.timberkt

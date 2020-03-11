@@ -41,7 +41,9 @@ abstract class StateViewModel<S : State>(initialState: S) : ViewModel() {
      *
      * An [actor] is used to prevent race-conditions, and stale [State] being sent to the [Update].
      */
-    @UseExperimental(ObsoleteCoroutinesApi::class, ExperimentalCoroutinesApi::class)
+    @OptIn(
+        ObsoleteCoroutinesApi::class, ExperimentalCoroutinesApi::class
+    )
     private val updateStateActor = viewModelScope.actor<Update<S>> {
         channel.consumeEach { update ->
             update.invoke(currentState)
@@ -81,7 +83,7 @@ abstract class StateViewModel<S : State>(initialState: S) : ViewModel() {
      *
      * @param[block] A lambda scoped to the current [State].
      */
-    @UseExperimental(ExperimentalCoroutinesApi::class)
+    @OptIn(ExperimentalCoroutinesApi::class)
     protected fun setState(block: Update<S>) {
         if (updateStateActor.isClosedForSend) {
             i { "State actor is closed, cannot offer update." }

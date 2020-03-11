@@ -63,8 +63,6 @@ internal fun createPhotosAPIClient(context: Context): PhotosLibraryClient? {
         val credentials = UserCredentials.newBuilder()
             .setClientId(BuildConfig.GOOGLE_API_CLIENT_ID)
             .setClientSecret(BuildConfig.GOOGLE_API_CLIENT_SECRET)
-            .setRefreshToken("1//0fIiTSkdKr7pmCgYIARAAGA8SNwF-L9IrnMxn03iLTETQPVhey6E37iVvlpo6cx9GQUgAtY8l3oj0bytM8CYOxxazm3F03cD0vbs")
-//            .setAccessToken(AccessToken("ya29.a0Adw1xeV1ujIqjKWSfiOpMHf4Umhho--8XeBMdDq2t3pXOJmoWcWOGQVQHEUypfnWv8b8luuAxGc_vDB_VdPVvNK62xUaAPI03-EbRSNbnY15sChOuhfBwjxfkRSmemii7dGIEWI7lzKUGwpDxMJDDIe8CH5eEVw---E", null))
             .build()
 
         e { "server code: ${authState.serverCode}" }

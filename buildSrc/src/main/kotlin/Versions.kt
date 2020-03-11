@@ -22,7 +22,7 @@ object Versions {
 
     const val com_xwray: String = "2.7.2"
 
-    const val io_grpc: String = "1.21.0" // available: "1.27.1"
+    const val io_grpc: String = "1.27.1"
 
     const val com_google_android_play_core_ktx: String = "1.6.5"
 
@@ -61,6 +61,8 @@ object Versions {
     const val appcompat: String = "1.1.0"
 
     const val material: String = "1.1.0"
+
+    const val retrofit: String = "2.7.1"
 
     const val timberkt: String = "1.5.1"
 

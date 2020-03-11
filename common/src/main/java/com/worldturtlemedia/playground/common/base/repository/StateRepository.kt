@@ -8,7 +8,9 @@ import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 
-@UseExperimental(ExperimentalCoroutinesApi::class, FlowPreview::class)
+@OptIn(
+    ExperimentalCoroutinesApi::class, FlowPreview::class
+)
 abstract class StateRepository<V : Any> {
 
     private val _state = ConflatedBroadcastChannel<V>()

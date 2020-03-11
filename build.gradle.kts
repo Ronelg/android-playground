@@ -24,13 +24,11 @@ allprojects {
         google()
         jcenter()
     }
-
-
 }
 
 tasks.withType<KotlinCompile> {
     kotlinOptions {
-        freeCompilerArgs = freeCompilerArgs + listOf("-XXLanguage:+NewInference", "-Xuse-experimental=kotlin.Experimental")
+        freeCompilerArgs = freeCompilerArgs + listOf("-XXLanguage:+NewInference", "-Xopt-in=org.mylibrary.OptInAnnotation")
     }
 }
 
