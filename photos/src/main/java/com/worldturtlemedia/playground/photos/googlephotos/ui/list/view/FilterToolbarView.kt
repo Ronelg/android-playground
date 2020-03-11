@@ -24,6 +24,8 @@ class FilterToolbarView : FrameLayout {
     override fun onFinishInflate() {
         super.onFinishInflate()
 
-        btnFilter.setOnClickListener { onFilterClicked() }
+        btnFilter.setOnClickListener {
+            onFilterClicked()
+        }
     }
 }

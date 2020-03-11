@@ -18,7 +18,7 @@ sealed class GoogleAuthState {
 
             return try {
                 Authenticated(
-                    serverCode = account.idToken
+                    serverCode = account.serverAuthCode
                         ?: throw IllegalArgumentException("Server auth code was null!"),
                     user = GoogleAuthUser(
                         email = account.email
@@ -27,9 +27,7 @@ sealed class GoogleAuthState {
                     )
                 )
             } catch (error: Throwable) {
-                Error(
-                    error
-                )
+                Error(error)
             }
         }
     }

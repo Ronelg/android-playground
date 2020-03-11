@@ -23,6 +23,12 @@ object Libs {
     /**
      * https://kotlinlang.org/
      */
+    const val kotlin_gradle_plugin: String = "org.jetbrains.kotlin:kotlin-gradle-plugin:" +
+            Versions.org_jetbrains_kotlin
+
+    /**
+     * https://kotlinlang.org/
+     */
     const val kotlin_android_extensions: String =
             "org.jetbrains.kotlin:kotlin-android-extensions:" + Versions.org_jetbrains_kotlin
 
@@ -37,12 +43,6 @@ object Libs {
      * https://kotlinlang.org/
      */
     const val kotlin_stdlib_jdk7: String = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:" +
-            Versions.org_jetbrains_kotlin
-
-    /**
-     * https://kotlinlang.org/
-     */
-    const val kotlin_gradle_plugin: String = "org.jetbrains.kotlin:kotlin-gradle-plugin:" +
             Versions.org_jetbrains_kotlin
 
     /**
@@ -109,6 +109,26 @@ object Libs {
      */
     const val groupie_kotlin_android_extensions: String =
             "com.xwray:groupie-kotlin-android-extensions:" + Versions.com_xwray
+
+    /**
+     * https://github.com/grpc/grpc-java
+     */
+    const val grpc_netty: String = "io.grpc:grpc-netty:" + Versions.io_grpc
+
+    /**
+     * https://github.com/grpc/grpc-java
+     */
+    const val grpc_okhttp: String = "io.grpc:grpc-okhttp:" + Versions.io_grpc
+
+    /**
+     * https://github.com/grpc/grpc-java
+     */
+    const val grpc_protobuf: String = "io.grpc:grpc-protobuf:" + Versions.io_grpc
+
+    /**
+     * https://github.com/grpc/grpc-java
+     */
+    const val grpc_stub: String = "io.grpc:grpc-stub:" + Versions.io_grpc
 
     const val com_google_android_play_core_ktx: String = "com.google.android.play:core-ktx:" +
             Versions.com_google_android_play_core_ktx

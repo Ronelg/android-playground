@@ -14,13 +14,15 @@ import org.gradle.plugin.use.PluginDependencySpec
 object Versions {
     const val org_jetbrains_kotlinx_kotlinx_coroutines: String = "1.3.4"
 
-    const val org_jetbrains_kotlin: String = "1.3.61"
+    const val org_jetbrains_kotlin: String = "1.3.70"
 
     const val androidx_navigation: String = "2.2.1"
 
     const val androidx_lifecycle: String = "2.2.0"
 
     const val com_xwray: String = "2.7.2"
+
+    const val io_grpc: String = "1.21.0" // available: "1.27.1"
 
     const val com_google_android_play_core_ktx: String = "1.6.5"
 

@@ -27,6 +27,6 @@ class AuthErrorView : ConstraintLayout, Binding<AuthenticationErrorStubBinding> 
     override fun onFinishInflate() {
         super.onFinishInflate()
 
-        binding.btnRetry.onClick(onRetry)
+        binding.btnRetry.setOnClickListener { onRetry() }
     }
 }

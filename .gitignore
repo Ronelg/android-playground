@@ -3,7 +3,9 @@ buildSrc/src/main/kotlin/Secrets.kt
 google-services.json
 private_key.pepk
 playground.jks
+
 ./Playground
+
 
 # Built application files
 *.apk

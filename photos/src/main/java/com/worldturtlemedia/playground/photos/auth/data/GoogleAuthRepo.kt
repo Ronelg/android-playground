@@ -35,7 +35,7 @@ class GoogleAuthRepo(
         .requestEmail()
         .requestProfile()
         .requestScopes(SCOPE_PHOTOS_READONLY)
-        .requestIdToken(BuildConfig.GOOGLE_API_AUTH_CODE)
+        .requestServerAuthCode(BuildConfig.GOOGLE_API_CLIENT_ID, false)
         .build()
 
     private val client by lazy { GoogleSignIn.getClient(context, signInOptions) }

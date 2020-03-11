@@ -27,6 +27,6 @@ class UnauthenticatedView : ConstraintLayout, Binding<UnauthenticatedStubBinding
     override fun onFinishInflate() {
         super.onFinishInflate()
 
-        binding.btnRetry.onClick(onRetry)
+        binding.btnRetry.setOnClickListener { onRetry() }
     }
 }
