@@ -91,6 +91,8 @@ dependencies {
     implementation(Libs.lifecycle_runtime_ktx)
     implementation(Libs.material)
 
+    implementation(Libs.kotpref)
+
     /* Misc */
     implementation(Libs.timberkt)
     implementation(Libs.firebase_crashlytics)

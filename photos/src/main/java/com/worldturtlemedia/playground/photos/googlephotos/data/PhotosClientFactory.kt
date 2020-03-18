@@ -6,8 +6,6 @@ import com.github.ajalt.timberkt.i
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.api.gax.core.FixedCredentialsProvider
 import com.google.api.gax.rpc.ApiException
-import com.google.auth.oauth2.AccessToken
-import com.google.auth.oauth2.GoogleCredentials
 import com.google.auth.oauth2.UserCredentials
 import com.google.photos.library.v1.PhotosLibraryClient
 import com.google.photos.library.v1.PhotosLibrarySettings
@@ -15,6 +13,7 @@ import com.worldturtlemedia.playground.common.di.FakeDI
 import com.worldturtlemedia.playground.common.ktx.emitAndLog
 import com.worldturtlemedia.playground.photos.BuildConfig
 import com.worldturtlemedia.playground.photos.auth.data.GoogleAuthState
+import com.worldturtlemedia.playground.photos.auth.data.RefreshTokenSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -23,10 +22,18 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import java.io.IOException
 
-class PhotosClientFactory(private val context: Context) {
+class PhotosClientFactory(
+    private val context: Context,
+    private val refreshTokenSource: RefreshTokenSource
+) {
 
     companion object Factory {
-        val instance by lazy { PhotosClientFactory(FakeDI.applicationContext) }
+        val instance by lazy {
+            PhotosClientFactory(
+                FakeDI.applicationContext,
+                RefreshTokenSource.instance
+            )
+        }
     }
 
     private var _client: PhotosLibraryClient? = null
@@ -52,30 +59,35 @@ class PhotosClientFactory(private val context: Context) {
             emitAndLog(PhotosResult.Fail(error))
         }
     }.flowOn(Dispatchers.IO)
-}
 
-internal fun createPhotosAPIClient(context: Context): PhotosLibraryClient? {
-    val authState = GoogleAuthState.from(GoogleSignIn.getLastSignedInAccount(context))
-    if (authState !is GoogleAuthState.Authenticated) return null
+    private fun createPhotosAPIClient(context: Context): PhotosLibraryClient? {
+        val authState = GoogleAuthState.from(GoogleSignIn.getLastSignedInAccount(context))
+        if (authState !is GoogleAuthState.Authenticated) return null
 
-    return try {
 
-        val credentials = UserCredentials.newBuilder()
-            .setClientId(BuildConfig.GOOGLE_API_CLIENT_ID)
-            .setClientSecret(BuildConfig.GOOGLE_API_CLIENT_SECRET)
-            .build()
 
-        e { "server code: ${authState.serverCode}" }
-        val settings = PhotosLibrarySettings.newBuilder()
-            .setCredentialsProvider(FixedCredentialsProvider.create(credentials))
-            .build()
+        return try {
 
-        PhotosLibraryClient.initialize(settings)
-    } catch (error: IOException) {
-        e(error) { "Failed to create the Photos client!" }
-        null
-    } catch (error: Throwable) {
-        e(error) { "Generic error" }
-        throw error
+            e { "auth: ${GoogleSignIn.getLastSignedInAccount(context)?.id}" }
+
+            val credentials = UserCredentials.newBuilder()
+                .setClientId(BuildConfig.GOOGLE_API_CLIENT_ID)
+                .setClientSecret(BuildConfig.GOOGLE_API_CLIENT_SECRET)
+                .setRefreshToken("blah")
+                .build()
+
+            e { "server code: ${authState.getServerAuthCode(context)}" }
+            val settings = PhotosLibrarySettings.newBuilder()
+                .setCredentialsProvider(FixedCredentialsProvider.create(credentials))
+                .build()
+
+            PhotosLibraryClient.initialize(settings)
+        } catch (error: IOException) {
+            e(error) { "Failed to create the Photos client!" }
+            null
+        } catch (error: Throwable) {
+            e(error) { "Generic error" }
+            throw error
+        }
     }
 }

@@ -230,6 +230,11 @@ object Libs {
     const val timberkt: String = "com.github.ajalt:timberkt:" + Versions.timberkt
 
     /**
+     * https://github.com/chibatching/kotpref
+     */
+    const val kotpref: String = "com.chibatching.kotpref:kotpref:" + Versions.kotpref
+
+    /**
      * https://developer.android.com/studio
      */
     const val aapt2: String = "com.android.tools.build:aapt2:" + Versions.aapt2

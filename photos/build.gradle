@@ -2,6 +2,7 @@ apply plugin: BuildPlugins.library
 apply plugin: BuildPlugins.kotlinAndroid
 apply plugin: BuildPlugins.kotlinAndroidExtensions
 apply plugin: BuildPlugins.kotlinSafeArgs
+apply plugin: BuildPlugins.kotlinKapt
 
 android {
     compileSdkVersion App.compileSdk
@@ -59,7 +60,13 @@ dependencies {
     implementation(Libs.coil)
     implementation(Libs.inline_activity_result_kotlin)
 
+    implementation(Libs.kotpref)
+
     implementation(Libs.retrofit)
+    implementation("com.squareup.moshi:moshi-kotlin:1.9.2")
+    kapt("com.squareup.moshi:moshi-kotlin-codegen:1.9.2")
+
+    implementation 'com.google.firebase:firebase-functions-ktx:19.0.2'
     implementation(Libs.play_services_auth)
 
     implementation(Libs.google_photos_library_client)

@@ -3,6 +3,7 @@ buildSrc/src/main/kotlin/Secrets.kt
 google-services.json
 private_key.pepk
 playground.jks
+firebase/functions/src/secrets.ts
 
 ./Playground
 

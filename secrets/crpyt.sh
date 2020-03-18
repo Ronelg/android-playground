@@ -21,7 +21,8 @@ function showUsage() {
 # $3 - in
 # $4 - out
 function crypto() {
-  openssl aes-256-cbc "-$1" -k "$2" -in "$3" -out "$4" -md sha512 -pbkdf2 -iter 100000 -salt
+  openssl aes-256-cbc "-$1" -a -salt -k "$2" -in "$3" -out "$4" -md sha256
+
   retVal=$?
   if [ $retVal -ne 0 ]; then
     # rm $2
@@ -62,6 +63,9 @@ function decrypt() {
 
   echo "Decrypting google-services.json..."
   crypto "d" "$password" "$CWD/encrypted/google-services.json.encrypted" "$PARENT/app/google-services.json"
+
+  echo "Decrypting firebase functions secrets..."
+  crypto "d" "$password" "$CWD/encrypted/secrets.ts.encrypted" "$PARENT/firebase/functions/src/secrets.ts"
 }
 
 function encrypt() {
@@ -87,6 +91,9 @@ function encrypt() {
 
   echo "Encrypting google-services.json..."
   crypto "e" "$password" "$PARENT/app/google-services.json" "$CWD/encrypted/google-services.json.encrypted"
+
+  echo "Encrypting firebase functions secrets..."
+  crypto "e" "$password" "$PARENT/firebase/functions/src/secrets.ts" "$CWD/encrypted/secrets.ts.encrypted"
 }
 
 if [[ "$1" == "encrypt" ]]; then
