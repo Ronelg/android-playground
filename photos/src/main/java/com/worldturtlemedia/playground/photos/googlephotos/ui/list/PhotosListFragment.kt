@@ -35,7 +35,7 @@ class PhotosListFragment : BaseFragment<PhotosListFragmentBinding>(R.layout.phot
     }
 
     override fun observeViewModel() {
-        authViewModel.showAuthDialogIfNeeded(this)
+        authViewModel.init(requireContext())
 
         viewModel.state.observe(owner) { state ->
             binding.mediaTypeFilter.setSelected(state.mediaTypeFilter)

@@ -4,6 +4,7 @@ import androidx.lifecycle.*
 import com.github.ajalt.timberkt.i
 import com.worldturtlemedia.playground.common.ktx.mediatorLiveDataOf
 import com.worldturtlemedia.playground.common.ktx.observeProperty
+import com.worldturtlemedia.playground.common.ktx.simpleName
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.channels.actor
@@ -12,6 +13,8 @@ import kotlinx.coroutines.channels.consumeEach
 interface State
 
 abstract class StateViewModel<S : State>(initialState: S) : ViewModel() {
+
+    protected open val isDebugMode: Boolean = false
 
     /**
      * Create a Single source of truth for the state by hiding the mutable LiveData.
@@ -47,7 +50,12 @@ abstract class StateViewModel<S : State>(initialState: S) : ViewModel() {
     private val updateStateActor = viewModelScope.actor<Update<S>> {
         channel.consumeEach { update ->
             update.invoke(currentState)
-                ?.let { _state.value = it }
+                ?.let { newState ->
+                    _state.value = newState
+                    if (isDebugMode) {
+                        i { "$simpleName: New state: $newState" }
+                    }
+                }
                 ?: i { "Returned null, not updating state" }
         }
     }

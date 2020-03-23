@@ -1,21 +1,18 @@
 package com.worldturtlemedia.playground.photos.googlephotos.data
 
 import com.google.photos.types.proto.Album
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
 
 class GooglePhotosRepo(
-    private val factory: PhotosClientFactory
-) {
+    private val delegate: PhotosClientFactory
+) : PhotosClient by delegate {
 
-    suspend fun test(): Flow<PhotosResult<List<Album>>> {
-        return factory.safeApiCall { client ->
+    suspend fun test(): Flow<PhotosResult<List<Album>>> = safeApiCall { client ->
+        val result = client.listAlbums()
 
-            val result = client.listAlbums()
+        val list = result.iterateAll().toList()
 
-            val list = result.iterateAll().toList()
-
-            list
-        }
+        list
     }
 
     companion object Factory {

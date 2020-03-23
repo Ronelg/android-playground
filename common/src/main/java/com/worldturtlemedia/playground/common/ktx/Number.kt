@@ -11,3 +11,12 @@ val Int.dp: Int
 
 val Float.dp: Float
     get() = (this * Resources.getSystem().displayMetrics.density + 0.5f)
+
+
+fun String?.parseLongOrNull(): Long? = try {
+    this?.toLong()
+} catch (error: Throwable) {
+    null
+}
+
+fun String?.parseLong(default: Long) = parseLongOrNull() ?: default

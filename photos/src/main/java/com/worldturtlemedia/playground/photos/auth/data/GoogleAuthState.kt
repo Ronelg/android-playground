@@ -1,36 +1,26 @@
 package com.worldturtlemedia.playground.photos.auth.data
 
-import android.content.Context
 import android.net.Uri
-import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.auth.oauth2.AccessToken
 
 sealed class GoogleAuthState {
     object Unauthenticated : GoogleAuthState()
     data class Error(val exception: Throwable) : GoogleAuthState()
     data class Authenticated(
-        val user: GoogleAuthUser
-    ) : GoogleAuthState() {
-
-        fun getServerAuthCode(context: Context) =
-            GoogleSignIn.getLastSignedInAccount(context)?.serverAuthCode
-                ?: throw IllegalStateException("Authenticated, but there is no serverAuthCode!")
-    }
+        val user: GoogleAuthUser,
+        val accessToken: AccessToken
+    ) : GoogleAuthState()
 
     companion object {
 
-        fun from(account: GoogleSignInAccount?): GoogleAuthState {
-            if (account == null || account.isExpired) return Unauthenticated
+        fun from(account: GoogleSignInAccount?, token: AccessToken?): GoogleAuthState {
+            if (account == null || account.isExpired || token == null) return Unauthenticated
 
             return try {
                 Authenticated(
-                    user = GoogleAuthUser(
-                        id = account.id
-                            ?: throw IllegalArgumentException("Account id was null!"),
-                        email = account.email
-                            ?: throw IllegalArgumentException("Account email was null!"),
-                        avatarUrl = account.photoUrl
-                    )
+                    user = GoogleAuthUser.from(account),
+                    accessToken = token
                 )
             } catch (error: Throwable) {
                 Error(error)
@@ -43,7 +33,17 @@ data class GoogleAuthUser(
     val id: String,
     val email: String,
     val avatarUrl: Uri?
-)
+) {
+
+    companion object {
+
+        fun from(account: GoogleSignInAccount) = GoogleAuthUser(
+            id = account.id!!,
+            email = account.email!!,
+            avatarUrl = account.photoUrl
+        )
+    }
+}
 
 val GoogleAuthState.errorOrNull: String?
     get() = if (this is GoogleAuthState.Error) exception.message else null

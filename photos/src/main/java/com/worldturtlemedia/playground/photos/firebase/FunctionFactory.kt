@@ -24,6 +24,11 @@ abstract class FunctionFactory {
                 }
         }
 
+    protected suspend fun hashMapCall(
+        function: String,
+        data: Any? = null
+    ): Result<HashMap<String, Any>> = safeCall(function, data)
+
     private fun <R> getResult(function: String, task: Task<HttpsCallableResult>): Result<R> =
         if (task.isSuccessful) {
             @Suppress("UNCHECKED_CAST")

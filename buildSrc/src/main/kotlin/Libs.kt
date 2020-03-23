@@ -42,6 +42,13 @@ object Libs {
     /**
      * https://kotlinlang.org/
      */
+    const val kotlin_annotation_processing_gradle: String =
+            "org.jetbrains.kotlin:kotlin-annotation-processing-gradle:" +
+            Versions.org_jetbrains_kotlin
+
+    /**
+     * https://kotlinlang.org/
+     */
     const val kotlin_stdlib_jdk7: String = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:" +
             Versions.org_jetbrains_kotlin
 
@@ -98,6 +105,18 @@ object Libs {
      */
     const val lifecycle_viewmodel_savedstate: String =
             "androidx.lifecycle:lifecycle-viewmodel-savedstate:" + Versions.androidx_lifecycle
+
+    /**
+     * https://github.com/square/moshi
+     */
+    const val moshi_kotlin: String = "com.squareup.moshi:moshi-kotlin:" +
+            Versions.com_squareup_moshi
+
+    /**
+     * https://github.com/square/moshi
+     */
+    const val moshi_kotlin_codegen: String = "com.squareup.moshi:moshi-kotlin-codegen:" +
+            Versions.com_squareup_moshi
 
     /**
      * https://github.com/lisawray/groupie
@@ -167,6 +186,9 @@ object Libs {
             "com.google.firebase:firebase-crashlytics-gradle:" +
             Versions.firebase_crashlytics_gradle
 
+    const val firebase_functions_ktx: String = "com.google.firebase:firebase-functions-ktx:" +
+            Versions.firebase_functions_ktx
+
     const val firebase_crashlytics: String = "com.google.firebase:firebase-crashlytics:" +
             Versions.firebase_crashlytics
 
@@ -213,6 +235,11 @@ object Libs {
      * https://developer.android.com/jetpack/androidx
      */
     const val appcompat: String = "androidx.appcompat:appcompat:" + Versions.appcompat
+
+    /**
+     * https://www.joda.org/joda-time/
+     */
+    const val joda_time: String = "joda-time:joda-time:" + Versions.joda_time
 
     /**
      * http://developer.android.com/tools/extras/support-library.html

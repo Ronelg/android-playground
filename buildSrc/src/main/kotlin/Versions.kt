@@ -13,12 +13,15 @@ import org.gradle.plugin.use.PluginDependencySpec
  */
 object Versions {
     const val org_jetbrains_kotlinx_kotlinx_coroutines: String = "1.3.5"
+             // available: "1.3.5-1.4-M1-release-99"
 
     const val org_jetbrains_kotlin: String = "1.3.70"
 
     const val androidx_navigation: String = "2.2.1"
 
     const val androidx_lifecycle: String = "2.2.0"
+
+    const val com_squareup_moshi: String = "1.9.2"
 
     const val com_xwray: String = "2.7.2"
 
@@ -38,6 +41,8 @@ object Versions {
 
     const val firebase_crashlytics_gradle: String = "2.0.0-beta02"
 
+    const val firebase_functions_ktx: String = "19.0.2"
+
     const val firebase_crashlytics: String = "17.0.0-beta01"
 
     const val leakcanary_android: String = "2.2"
@@ -50,7 +55,7 @@ object Versions {
 
     const val activity_ktx: String = "1.1.0"
 
-    const val fragment_ktx: String = "1.2.2"
+    const val fragment_ktx: String = "1.2.3"
 
     const val recyclerview: String = "1.1.0"
 
@@ -59,6 +64,8 @@ object Versions {
     const val viewbinding: String = "3.6.1"
 
     const val appcompat: String = "1.1.0"
+
+    const val joda_time: String = "2.10.5"
 
     const val material: String = "1.1.0"
 

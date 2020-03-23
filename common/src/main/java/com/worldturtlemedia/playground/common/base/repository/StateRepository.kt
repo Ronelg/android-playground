@@ -2,16 +2,20 @@ package com.worldturtlemedia.playground.common.base.repository
 
 import com.github.ajalt.timberkt.e
 import com.github.ajalt.timberkt.i
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
+import kotlin.coroutines.CoroutineContext
 
 @OptIn(
     ExperimentalCoroutinesApi::class, FlowPreview::class
 )
-abstract class StateRepository<V : Any> {
+abstract class StateRepository<V : Any> : CoroutineScope {
+
+    protected val parentJob = SupervisorJob()
+
+    override val coroutineContext: CoroutineContext = Dispatchers.IO + parentJob
 
     private val _state = ConflatedBroadcastChannel<V>()
 

@@ -6,6 +6,7 @@ import { postRequestAuthToken } from "../client";
 export interface RequestAccessTokenResult {
   accessToken: string;
   expiry: number;
+  refreshToken: string | undefined
 }
 
 export async function requestAccessToken(
@@ -18,13 +19,14 @@ export async function requestAccessToken(
     );
 
   try {
-    const { access_token, expires_in } = await postRequestAuthToken(
+    const { access_token, expires_in, refresh_token } = await postRequestAuthToken(
       serverAuthCode
     );
     if (validString(access_token) && validNumber(expires_in)) {
       return {
         accessToken: access_token,
-        expiry: expires_in
+        expiry: expires_in,
+        refreshToken: refresh_token
       };
     }
 

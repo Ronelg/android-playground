@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.github.ajalt.timberkt.e
 import com.worldturtlemedia.playground.common.base.ui.dialog.showDialog
 import com.worldturtlemedia.playground.common.base.ui.viewmodel.State
 import com.worldturtlemedia.playground.common.base.ui.viewmodel.StateViewModel
@@ -26,16 +27,19 @@ class PhotosAuthModel : StateViewModel<PhotosAuthState>(PhotosAuthState()) {
     }
 
     fun init(context: Context) {
-        googleAuthRepo.refreshAuthState(context)
+        viewModelScope.launch {
+            googleAuthRepo.refreshAuthState(context)
+        }
     }
 
     fun showAuthDialogIfNeeded(fragment: Fragment) {
+        val test = googleAuthRepo.currentState
+        e { "showAuthDialog: currentstate $test" }
         if (currentState.isAuthenticated) return
 
-        val dialog = ConnectGooglePhotosDialog()
-            .onDismiss {
-                setState { copy(isShowingAuthDialog = false) }
-            }
+        val dialog = ConnectGooglePhotosDialog().onDismiss {
+            setState { copy(isShowingAuthDialog = false) }
+        }
 
         fragment.showDialog(dialog)
         setState { copy(isShowingAuthDialog = true) }
