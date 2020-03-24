@@ -5,8 +5,7 @@ import com.github.ajalt.timberkt.i
 import com.worldturtlemedia.playground.common.ktx.mediatorLiveDataOf
 import com.worldturtlemedia.playground.common.ktx.observeProperty
 import com.worldturtlemedia.playground.common.ktx.simpleName
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.ObsoleteCoroutinesApi
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.actor
 import kotlinx.coroutines.channels.consumeEach
 
@@ -102,5 +101,9 @@ abstract class StateViewModel<S : State>(initialState: S) : ViewModel() {
 
     protected fun noUpdate() = null
 }
+
+fun <S : State> StateViewModel<S>.launchIO(
+    block: suspend CoroutineScope.() -> Unit
+) = viewModelScope.launch(Dispatchers.IO, block = block)
 
 typealias Update<S> = suspend S.() -> S?

@@ -23,12 +23,6 @@ object Libs {
     /**
      * https://kotlinlang.org/
      */
-    const val kotlin_gradle_plugin: String = "org.jetbrains.kotlin:kotlin-gradle-plugin:" +
-            Versions.org_jetbrains_kotlin
-
-    /**
-     * https://kotlinlang.org/
-     */
     const val kotlin_android_extensions: String =
             "org.jetbrains.kotlin:kotlin-android-extensions:" + Versions.org_jetbrains_kotlin
 
@@ -44,6 +38,12 @@ object Libs {
      */
     const val kotlin_annotation_processing_gradle: String =
             "org.jetbrains.kotlin:kotlin-annotation-processing-gradle:" +
+            Versions.org_jetbrains_kotlin
+
+    /**
+     * https://kotlinlang.org/
+     */
+    const val kotlin_gradle_plugin: String = "org.jetbrains.kotlin:kotlin-gradle-plugin:" +
             Versions.org_jetbrains_kotlin
 
     /**
@@ -119,6 +119,21 @@ object Libs {
             Versions.com_squareup_moshi
 
     /**
+     * https://developer.android.com/topic/libraries/architecture/index.html
+     */
+    const val room_compiler: String = "androidx.room:room-compiler:" + Versions.androidx_room
+
+    /**
+     * https://developer.android.com/topic/libraries/architecture/index.html
+     */
+    const val room_ktx: String = "androidx.room:room-ktx:" + Versions.androidx_room
+
+    /**
+     * https://developer.android.com/topic/libraries/architecture/index.html
+     */
+    const val room_runtime: String = "androidx.room:room-runtime:" + Versions.androidx_room
+
+    /**
      * https://github.com/lisawray/groupie
      */
     const val groupie: String = "com.xwray:groupie:" + Versions.com_xwray
@@ -192,6 +207,12 @@ object Libs {
     const val firebase_crashlytics: String = "com.google.firebase:firebase-crashlytics:" +
             Versions.firebase_crashlytics
 
+    const val firebase_config_ktx: String = "com.google.firebase:firebase-config-ktx:" +
+            Versions.firebase_config_ktx
+
+    const val firebase_analytics: String = "com.google.firebase:firebase-analytics:" +
+            Versions.firebase_analytics
+
     /**
      * http://github.com/square/leakcanary/
      */
@@ -240,6 +261,8 @@ object Libs {
      * https://www.joda.org/joda-time/
      */
     const val joda_time: String = "joda-time:joda-time:" + Versions.joda_time
+
+    const val koda_time: String = "com.github.debop:koda-time:" + Versions.koda_time
 
     /**
      * http://developer.android.com/tools/extras/support-library.html

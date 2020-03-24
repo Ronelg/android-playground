@@ -1,6 +1,7 @@
 package com.worldturtlemedia.playground.photos.db
 
 import com.chibatching.kotpref.KotprefModel
+import com.github.ajalt.timberkt.e
 import com.google.auth.oauth2.AccessToken
 import com.worldturtlemedia.playground.photos.auth.data.token.AccessTokens
 import org.joda.time.DateTime
@@ -22,6 +23,10 @@ fun PhotosSharedPref.storeTokens(tokens: AccessTokens) {
     accessToken = tokens.accessToken
     accessTokenExpiry = tokens.expiry?.millis ?: -1
     refreshToken = refreshToken
+
+    if (tokens.expiry != null) {
+        e { "Token expires in: ${tokens.expiry}" }
+    }
 }
 
 fun PhotosSharedPref.retrieveTokens() = AccessTokens(

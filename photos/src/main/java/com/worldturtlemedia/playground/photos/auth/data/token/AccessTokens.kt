@@ -4,6 +4,7 @@ import com.google.auth.oauth2.AccessToken
 import com.worldturtlemedia.playground.common.ktx.cast
 import org.joda.time.DateTime
 
+// TODO: We're going to have to refactor this to use refresh_tokens instead
 data class AccessTokens(
     val accessToken: String?,
     val expiry: DateTime?,
@@ -30,7 +31,7 @@ data class AccessTokens(
             val refreshToken = data[KEY_REFRESH_TOKEN] as String?
             val accessToken = data[KEY_ACCESS_TOKEN] as String
             val expiry = data[KEY_EXPIRY]?.cast<Int>()
-                ?.let { value -> DateTime.now().plusMillis(value * 1000) }
+                ?.let { value -> DateTime.now().plusSeconds(value) }
                 ?: return null
 
             return AccessTokens(accessToken, expiry, refreshToken)

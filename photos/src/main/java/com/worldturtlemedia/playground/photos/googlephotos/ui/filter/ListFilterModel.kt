@@ -1,30 +1,29 @@
 package com.worldturtlemedia.playground.photos.googlephotos.ui.filter
 
-import androidx.lifecycle.viewModelScope
-import com.google.photos.types.proto.Album
 import com.worldturtlemedia.playground.common.base.ui.viewmodel.State
 import com.worldturtlemedia.playground.common.base.ui.viewmodel.StateViewModel
+import com.worldturtlemedia.playground.common.base.ui.viewmodel.launchIO
 import com.worldturtlemedia.playground.common.core.SingleEvent
-import com.worldturtlemedia.playground.photos.googlephotos.data.GooglePhotosRepo
+import com.worldturtlemedia.playground.photos.googlephotos.data.AlbumsRepository
 import com.worldturtlemedia.playground.photos.googlephotos.data.PhotosResult
-import kotlinx.coroutines.Dispatchers
+import com.worldturtlemedia.playground.photos.googlephotos.model.Album
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 
 class ListFilterModel : StateViewModel<ListFilterState>(ListFilterState()) {
 
-    private val googlePhotosRepo = GooglePhotosRepo.instance
+    private val albumsRepo = AlbumsRepository.instance
 
 
     init {
-        viewModelScope.launch(Dispatchers.IO) {
-            // TODO: Temporary
-            googlePhotosRepo.test().collect { value ->
-                if (value is PhotosResult.Success<List<Album>>) {
-                    setState { copy(albums = value.result) }
-                }
-            }
-        }
+        fetchAlbums()
+    }
+
+    fun loadMoreAlbums() = launchIO {
+        albumsRepo.loadMoreAlbums().collect { handleAlbumStatus(it) }
+    }
+
+    fun fetchAlbums() = launchIO {
+        albumsRepo.fetchAlbums().collect { handleAlbumStatus(it) }
     }
 
     fun clearFilters() = setState { copy(filters = emptyList()) }
@@ -34,12 +33,24 @@ class ListFilterModel : StateViewModel<ListFilterState>(ListFilterState()) {
     }
 
     fun close() = setState { copy(event = SingleEvent(ListFilterEvent.Close)) }
+
+    private fun handleAlbumStatus(status: PhotosResult<List<Album>>) {
+        setState {
+            copy(
+                loadingAlbums = status is PhotosResult.Loading,
+                albums = if (status is PhotosResult.Success) status.result else albums,
+                albumStatus = SingleEvent(status)
+            )
+        }
+    }
 }
 
 data class ListFilterState(
+    val loadingAlbums: Boolean = false,
+    val albums: List<Album> = emptyList(),
+    val albumStatus: SingleEvent<PhotosResult<List<Album>>>? = null,
     val filters: List<String> = emptyList(),
-    val event: SingleEvent<ListFilterEvent>? = null,
-    val albums: List<Album> = emptyList()
+    val event: SingleEvent<ListFilterEvent>? = null
 ) : State
 
 sealed class ListFilterEvent {

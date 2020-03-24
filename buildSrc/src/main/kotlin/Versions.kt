@@ -15,7 +15,7 @@ object Versions {
     const val org_jetbrains_kotlinx_kotlinx_coroutines: String = "1.3.5"
              // available: "1.3.5-1.4-M1-release-99"
 
-    const val org_jetbrains_kotlin: String = "1.3.70"
+    const val org_jetbrains_kotlin: String = "1.3.71"
 
     const val androidx_navigation: String = "2.2.1"
 
@@ -23,11 +23,13 @@ object Versions {
 
     const val com_squareup_moshi: String = "1.9.2"
 
+    const val androidx_room: String = "2.2.5"
+
     const val com_xwray: String = "2.7.2"
 
-    const val io_grpc: String = "1.27.1"
+    const val io_grpc: String = "1.28.0"
 
-    const val com_google_android_play_core_ktx: String = "1.6.5" // available: "1.7.0"
+    const val com_google_android_play_core_ktx: String = "1.7.0"
 
     const val com_android_tools_build_gradle: String = "3.6.1"
 
@@ -44,6 +46,10 @@ object Versions {
     const val firebase_functions_ktx: String = "19.0.2"
 
     const val firebase_crashlytics: String = "17.0.0-beta01"
+
+    const val firebase_config_ktx: String = "19.1.3"
+
+    const val firebase_analytics: String = "17.2.3"
 
     const val leakcanary_android: String = "2.2"
 
@@ -67,9 +73,11 @@ object Versions {
 
     const val joda_time: String = "2.10.5"
 
+    const val koda_time: String = "2.0.0"
+
     const val material: String = "1.1.0"
 
-    const val retrofit: String = "2.7.1"
+    const val retrofit: String = "2.8.0"
 
     const val timberkt: String = "1.5.1"
 

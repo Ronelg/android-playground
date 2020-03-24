@@ -26,7 +26,11 @@ import java.io.IOException
 
 interface PhotosClient {
     suspend fun <T> safeApiCall(
-        block: FlowCollector<PhotosResult<T>>.(client: PhotosLibraryClient) -> T
+        block: suspend (client: PhotosLibraryClient) -> T
+    ): PhotosResult<T>
+
+    suspend fun <T> safeApiFlow(
+        block: suspend FlowCollector<PhotosResult<T>>.(client: PhotosLibraryClient) -> T
     ): Flow<PhotosResult<T>>
 }
 
@@ -52,22 +56,33 @@ class PhotosClientFactory(
         return libraryClient ?: createPhotosAPIClient(context)?.also { libraryClient = it }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     override suspend fun <T> safeApiCall(
-        block: FlowCollector<PhotosResult<T>>.(client: PhotosLibraryClient) -> T
-    ): Flow<PhotosResult<T>> = flow<PhotosResult<T>> {
-        val client = ensureClient() ?: return@flow emitAndLog(PhotosResult.ClientFailure)
+        block: suspend (client: PhotosLibraryClient) -> T
+    ): PhotosResult<T> {
+        val client = ensureClient()
+            ?: return PhotosResult.Fail(PhotosError.ClientFailure)
 
-        emitAndLog(PhotosResult.Loading)
-
-        try {
-            val result = block.invoke(this, client)
+        return try {
+            val result = block.invoke(client)
             i { "Received: $result" }
 
-            emitAndLog(PhotosResult.Success(result))
+            PhotosResult.Success(result)
         } catch (error: ApiException) {
-            emitAndLog(PhotosResult.Fail(error))
+            e(error) { "Failed to make API request!" }
+            PhotosResult.Fail(PhotosError.RequestFail)
         }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override suspend fun <T> safeApiFlow(
+        block: suspend FlowCollector<PhotosResult<T>>.(client: PhotosLibraryClient) -> T
+    ): Flow<PhotosResult<T>> = flow<PhotosResult<T>> {
+        val result = safeApiCall { client ->
+            emitAndLog(PhotosResult.Loading)
+            block.invoke(this, client)
+        }
+
+        emitAndLog(result)
     }.flowOn(Dispatchers.IO)
 
     private suspend fun createPhotosAPIClient(context: Context): PhotosLibraryClient? {
@@ -101,3 +116,6 @@ class PhotosClientFactory(
     }
 }
 
+suspend fun <T> FlowCollector<PhotosResult<T>>.emitSuccess(data: T) {
+    emit(PhotosResult.Success(data))
+}
