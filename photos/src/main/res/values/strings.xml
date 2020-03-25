@@ -7,4 +7,17 @@
         <item quantity="one">Apply %1d Filter</item>
         <item quantity="other">Apply %1d Filters</item>
     </plurals>
+
+    <string name="category_animals">Animals</string>
+    <string name="category_birthdays">Birthdays</string>
+    <string name="category_cityScapes">CityScapes</string>
+    <string name="category_fashion">Fashion</string>
+    <string name="category_food">Food</string>
+    <string name="category_landmarks">Landmarks</string>
+    <string name="category_people">People</string>
+    <string name="category_sport">Sport</string>
+    <string name="category_travel">Travel</string>
+    <string name="category_weddings">Weddings</string>
+    <string name="clear"><u>Clear</u></string>
+    <string name="category_filter_explanation">Only a maximum of 10 filters can be selected, select NONE to see all media items</string>
 </resources>
