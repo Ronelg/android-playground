@@ -2,16 +2,19 @@ package com.worldturtlemedia.playground.photos.googlephotos.ui.list.view
 
 import android.content.Context
 import android.util.AttributeSet
+import android.view.Gravity
+import android.view.ViewGroup
 import android.widget.HorizontalScrollView
-import com.worldturtlemedia.playground.common.base.ui.viewbinding.Binding
-import com.worldturtlemedia.playground.common.base.ui.viewbinding.withBinding
+import android.widget.LinearLayout
+import android.widget.TextView
+import com.worldturtlemedia.playground.common.ktx.addRipple
+import com.worldturtlemedia.playground.common.ktx.addView
 import com.worldturtlemedia.playground.common.ktx.color
-import com.worldturtlemedia.playground.common.ktx.onClick
+import com.worldturtlemedia.playground.common.ktx.dp
 import com.worldturtlemedia.playground.photos.R
-import com.worldturtlemedia.playground.photos.databinding.FilterMediaTypeViewBinding
-import com.worldturtlemedia.playground.photos.databinding.FilterMediaTypeViewBinding.bind
+import com.worldturtlemedia.playground.photos.googlephotos.model.filter.MediaFilter
 
-class MediaTypeFilterView : HorizontalScrollView, Binding<FilterMediaTypeViewBinding> {
+class MediaTypeFilterView : HorizontalScrollView {
 
     constructor(context: Context) : super(context)
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
@@ -19,57 +22,57 @@ class MediaTypeFilterView : HorizontalScrollView, Binding<FilterMediaTypeViewBin
             super(context, attrs, defStyleAttr)
 
     init {
-        inflate(context, R.layout.filter_media_type_view, this)
-
         isFillViewport = true
     }
 
-    private var filterClickedListener: (MediaTypeFilter) -> Unit = {}
+    private var filterClickedListener: (MediaFilter) -> Unit = {}
 
-    override val binding: FilterMediaTypeViewBinding by lazy { bind(findViewById(R.id.container)) }
-
-    private val buttons = withBinding { listOf(btnAll, btnVideos, btnPhotos) }
+    private val buttons = listOf(MediaFilter.All, MediaFilter.Video, MediaFilter.Photo)
+        .map { type -> type to createTextView(type) }
+        .toMap()
 
     override fun onFinishInflate() {
         super.onFinishInflate()
 
-        withBinding {
-            btnAll.onClick { filterClickedListener(MediaTypeFilter.All) }
-            btnVideos.onClick { filterClickedListener(MediaTypeFilter.Videos) }
-            btnPhotos.onClick { filterClickedListener(MediaTypeFilter.Photos) }
+        addView {
+            LinearLayout(context).apply {
+                setBackgroundColor(context.color(R.color.backgroundLighter))
+                orientation = LinearLayout.HORIZONTAL
+                layoutParams = LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    context.resources.getDimensionPixelSize(R.dimen.toolbar_height)
+                )
+
+                buttons.values.forEach { addView(it) }
+            }
         }
 
         if (isInEditMode) {
-            setSelected(MediaTypeFilter.All)
+            setSelected(MediaFilter.All)
         }
     }
 
-    fun setSelected(mediaType: MediaTypeFilter) {
-        val targetView = mapTypeToView(mediaType)
-        buttons.forEach { view ->
+    fun setSelected(mediaType: MediaFilter) {
+        buttons.forEach { (type, view) ->
             val colorRes =
-                if (view == targetView) R.color.colorAccent
+                if (mediaType == type) R.color.colorAccent
                 else R.color.white
 
             view.setTextColor(context.color(colorRes))
         }
     }
 
-    fun onFilterClicked(block: (MediaTypeFilter) -> Unit) {
+    fun onFilterClicked(block: (MediaFilter) -> Unit) {
         filterClickedListener = block
     }
 
-    private fun mapTypeToView(type: MediaTypeFilter) = withBinding {
-        when (type) {
-            is MediaTypeFilter.All -> btnAll
-            is MediaTypeFilter.Videos -> btnVideos
-            is MediaTypeFilter.Photos -> btnPhotos
-        }
-    }
-}
+    private fun createTextView(type: MediaFilter) = TextView(context).apply {
+        setText(type.stringRes)
+        setTextColor(context.color(R.color.white))
+        addRipple()
+        layoutParams = LinearLayout.LayoutParams(80.dp, ViewGroup.LayoutParams.MATCH_PARENT)
+        gravity = Gravity.CENTER
 
-sealed class MediaTypeFilter {
-    object All : MediaTypeFilter()
-    object Videos : MediaTypeFilter()
-    object Photos : MediaTypeFilter()
+        setOnClickListener { filterClickedListener(type) }
+    }
 }

@@ -3,11 +3,11 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <application>
+    <application android:theme="@style/PhotosTheme">
         <activity
             android:name=".GooglePhotosActivity"
             android:exported="true"
             android:label="Google Photos"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/PhotosTheme" />
     </application>
 </manifest>

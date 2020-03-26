@@ -9,19 +9,30 @@
         android:id="@+id/photosListFragment"
         android:name="com.worldturtlemedia.playground.photos.googlephotos.ui.list.PhotosListFragment"
         android:label=""
-        tools:layout="@layout/photos_list_fragment" >
+        tools:layout="@layout/photos_list_fragment">
         <action
             android:id="@+id/toFilterFragment"
             app:destination="@id/listFilterFragment"
             app:enterAnim="@anim/slide_in_up"
             app:exitAnim="@anim/slide_out_down"
             app:popEnterAnim="@anim/slide_in_up"
-            app:popExitAnim="@anim/slide_out_down"
-            />
+            app:popExitAnim="@anim/slide_out_down" />
+        <action
+            android:id="@+id/toDebugScreen"
+            app:destination="@id/debugFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
     <fragment
         android:id="@+id/listFilterFragment"
         android:name="com.worldturtlemedia.playground.photos.googlephotos.ui.filter.ListFilterFragment"
-        tools:layout="@layout/list_filter_fragment"
-        android:label="ListFilterFragment" />
+        android:label="ListFilterFragment"
+        tools:layout="@layout/list_filter_fragment" />
+    <fragment
+        android:id="@+id/debugFragment"
+        android:name="com.worldturtlemedia.playground.photos.googlephotos.ui.debug.DebugFragment"
+        android:label="Debug"
+        tools:layout="@layout/debug_fragment" />
 </navigation>

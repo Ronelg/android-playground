@@ -8,6 +8,10 @@
         <item quantity="other">Apply %1d Filters</item>
     </plurals>
 
+    <string name="media_type_all">All</string>
+    <string name="media_type_videos">Videos</string>
+    <string name="media_type_photos">Photos</string>
+
     <string name="category_animals">Animals</string>
     <string name="category_birthdays">Birthdays</string>
     <string name="category_cityScapes">CityScapes</string>

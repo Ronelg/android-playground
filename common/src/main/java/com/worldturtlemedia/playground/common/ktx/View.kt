@@ -1,9 +1,8 @@
 package com.worldturtlemedia.playground.common.ktx
 
-import android.app.Activity
+import android.util.TypedValue
 import android.view.View
-import androidx.annotation.IdRes
-import androidx.fragment.app.Fragment
+import android.view.ViewGroup
 
 var View.visibleOrGone
     get() = visibility == View.VISIBLE
@@ -35,4 +34,18 @@ fun View.onClick(block: () -> Unit) {
 
 fun View.onLongClick(block: () -> Boolean) {
     setOnLongClickListener { block() }
+}
+
+fun View.addRipple() = with(TypedValue()) {
+    context.theme.resolveAttribute(android.R.attr.selectableItemBackground, this, true)
+    setBackgroundResource(resourceId)
+}
+
+fun View.addCircleRipple() = with(TypedValue()) {
+    context.theme.resolveAttribute(android.R.attr.selectableItemBackgroundBorderless, this, true)
+    setBackgroundResource(resourceId)
+}
+
+fun ViewGroup.addView(block: View.() -> View) {
+    addView(run(block))
 }

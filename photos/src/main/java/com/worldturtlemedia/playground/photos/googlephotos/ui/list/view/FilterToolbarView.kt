@@ -4,6 +4,8 @@ import android.content.Context
 import android.util.AttributeSet
 import android.widget.FrameLayout
 import android.widget.ImageView
+import com.worldturtlemedia.playground.common.ktx.visibleOrGone
+import com.worldturtlemedia.playground.photos.BuildConfig
 import com.worldturtlemedia.playground.photos.R
 
 class FilterToolbarView : FrameLayout {
@@ -19,13 +21,18 @@ class FilterToolbarView : FrameLayout {
 
     private val btnFilter by lazy { findViewById<ImageView>(R.id.btnFilter) }
 
+    private val btnDebug by lazy { findViewById<ImageView>(R.id.btnDebug) }
+
     var onFilterClicked: () -> Unit = {}
+
+    var onDebugClicked: () -> Unit = {}
 
     override fun onFinishInflate() {
         super.onFinishInflate()
 
-        btnFilter.setOnClickListener {
-            onFilterClicked()
-        }
+        btnDebug.visibleOrGone = BuildConfig.DEBUG || isInEditMode
+
+        btnFilter.setOnClickListener { onFilterClicked() }
+        btnDebug.setOnClickListener { onDebugClicked() }
     }
 }

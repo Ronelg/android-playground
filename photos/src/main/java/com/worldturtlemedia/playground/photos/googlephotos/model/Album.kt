@@ -15,7 +15,7 @@ fun GoogleAlbum.map() = Album(
     title = title,
     productUrl = productUrl,
     itemCount = mediaItemsCount,
-    coverPhotoUrl = coverPhotoBaseUrl
+    coverPhotoUrl = createMediaThumbnailUrl(coverPhotoBaseUrl)
 )
 
 fun Iterable<GoogleAlbum>.toModelList() = map { album -> album.map() }

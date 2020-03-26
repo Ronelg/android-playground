@@ -1,8 +1,10 @@
 package com.worldturtlemedia.playground.photos.googlephotos.data
 
 import com.github.ajalt.timberkt.e
+import com.github.ajalt.timberkt.i
 import com.google.api.gax.rpc.ApiException
 import com.google.photos.library.v1.internal.InternalPhotosLibraryClient
+import com.worldturtlemedia.playground.common.ktx.emitAndLog
 import com.worldturtlemedia.playground.photos.db.PhotosDatabase
 import com.worldturtlemedia.playground.photos.googlephotos.data.db.AlbumDao
 import com.worldturtlemedia.playground.photos.googlephotos.data.db.mapToModel
@@ -30,45 +32,45 @@ class AlbumsRepository(
     val hasMorePages: Boolean
         get() = currentPage?.hasNextPage() ?: true
 
-    suspend fun fetchAlbums(force: Boolean = false): Flow<PhotosResult<List<Album>>> = flow {
+    suspend fun fetchAlbums(force: Boolean = false): Flow<ApiResult<List<Album>>> = flow {
         try {
             // Tell the observer that we're loading!
-            emit(PhotosResult.Loading)
+            emit(ApiResult.Loading)
 
             // Load any existing albums from the database first
             val existingAlbums = loadAlbumsFromDatabase()
             if (existingAlbums.isNotEmpty()) {
-                emit(PhotosResult.Success(existingAlbums))
+                emit(ApiResult.Success(existingAlbums))
             }
 
             // If we've already loaded the first page, and there is some data, return early
             if (!force && currentPage != null && existingAlbums.isNotEmpty()) return@flow
 
-            emit(PhotosResult.Loading)
+            emit(ApiResult.Loading)
 
             // Fetch new albums from the API
             when (val remoteResult = loadInitialAlbums()) {
-                is PhotosResult.Fail -> emit(remoteResult)
-                is PhotosResult.Success -> {
+                is ApiResult.Fail -> emit(remoteResult)
+                is ApiResult.Success -> {
                     // Store the new albums in the database
                     storeAPIResultInDatabase(remoteResult.result)
 
                     // Return the album values from the database
-                    emit(PhotosResult.Success(loadAlbumsFromDatabase()))
+                    emit(ApiResult.Success(loadAlbumsFromDatabase()))
                 }
             }
         } catch (error: Throwable) {
             e(error) { "Unable to fetch albums" }
 
             val type =
-                if (error is ApiException) PhotosError.RequestFail
-                else PhotosError.Error(error)
+                if (error is ApiException) ApiError.RequestFail
+                else ApiError.Error(error)
 
-            emit(PhotosResult.Fail(type))
+            emit(ApiResult.Fail(type))
         }
     }
 
-    suspend fun loadMoreAlbums(): Flow<PhotosResult<List<Album>>> = flow {
+    suspend fun loadMoreAlbums(): Flow<ApiResult<List<Album>>> = flow {
         // If there is no next page to load, return early
         val nextPage = currentPage?.nextPage
         if (nextPage == null || !hasMorePages) return@flow
@@ -84,7 +86,7 @@ class AlbumsRepository(
             loadAlbumsFromDatabase()
         } catch (error: Throwable) {
             e(error) { "Unable to fetch the next page!" }
-            emit(PhotosResult.Fail(PhotosError.RequestFail))
+            emit(ApiResult.Fail(ApiError.RequestFail))
 
             return@flow
         }
@@ -96,7 +98,7 @@ class AlbumsRepository(
         return albumDao.allAlbums().mapToModel()
     }
 
-    private suspend fun loadInitialAlbums(): PhotosResult<List<Album>> =
+    private suspend fun loadInitialAlbums(): ApiResult<List<Album>> =
         safeApiCall { client ->
             val albumsResponse = client.listAlbums()
             currentPage = albumsResponse.page
@@ -107,5 +109,33 @@ class AlbumsRepository(
     private suspend fun storeAPIResultInDatabase(data: List<Album>) {
         val entities = data.toEntities()
         albumDao.insert(entities)
+    }
+
+    /**
+     * This is just for testing out the API, not production ready code (:
+     */
+    suspend fun debugFetchAllAlbums(): Flow<ApiResult<List<Album>>> = flow {
+        emitAndLog(ApiResult.Loading)
+        val firstLoad = safeApiCall { it.listAlbums() }
+
+        if (firstLoad !is ApiResult.Success) {
+            emitAndLog(ApiResult.Fail(ApiError.RequestFail))
+            return@flow
+        }
+
+        val list = mutableListOf<Album>()
+        var page = firstLoad.result.page
+        var count = 1
+        do {
+            i { "Loading page $count" }
+            val result = page.iterateAll().toModelList()
+            i { "Loaded page $count with ${result.size} items" }
+            list.addAll(result)
+            page = page.nextPage
+            count++
+        } while (page != null)
+
+        i { "Loaded ${list.size} albums from $count pages." }
+        emit(ApiResult.Success(list))
     }
 }

@@ -27,18 +27,23 @@ class PhotosListFragment : BaseFragment<PhotosListFragmentBinding>(R.layout.phot
             navigate(PhotosListFragmentDirections.toFilterFragment())
         }
 
+        toolbar.onDebugClicked = {
+            navigate(PhotosListFragmentDirections.toDebugScreen())
+        }
+
         mediaTypeFilter.onFilterClicked { viewModel.changeMediaType(it) }
 
         viewAuthError.onRetry = { authViewModel.showAuthDialogIfNeeded(this@PhotosListFragment) }
 
-        viewUnauthenticated.onRetry = { authViewModel.showAuthDialogIfNeeded(this@PhotosListFragment) }
+        viewUnauthenticated.onRetry =
+            { authViewModel.showAuthDialogIfNeeded(this@PhotosListFragment) }
     }
 
     override fun observeViewModel() {
         authViewModel.init(requireContext())
 
         viewModel.state.observe(owner) { state ->
-            binding.mediaTypeFilter.setSelected(state.mediaTypeFilter)
+            binding.mediaTypeFilter.setSelected(state.mediaFilter)
         }
 
         authViewModel.observe(owner) { state ->
@@ -48,7 +53,8 @@ class PhotosListFragment : BaseFragment<PhotosListFragmentBinding>(R.layout.phot
                     viewAuthError.binding.txtErrorMessage.text = errorMessage
                 }
 
-                viewUnauthenticated.visibleOrGone = !state.isShowingAuthDialog && state.auth is Unauthenticated
+                viewUnauthenticated.visibleOrGone =
+                    !state.isShowingAuthDialog && state.auth is Unauthenticated
 
                 authenticatedGroup.visibleOrGone = state.auth is Authenticated
             }
