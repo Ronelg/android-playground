@@ -24,4 +24,9 @@
     <string name="category_weddings">Weddings</string>
     <string name="clear"><u>Clear</u></string>
     <string name="category_filter_explanation">Only a maximum of 10 filters can be selected, select NONE to see all media items</string>
+
+    <string name="mash_selection_select_all">Select (All)</string>
+    <string name="mash_selection_select">Select (%1$d)</string>
+    <string name="mash_selection_deselect_all">Deselect (All)</string>
+    <string name="mash_selection_deselect">Deselect</string>
 </resources>

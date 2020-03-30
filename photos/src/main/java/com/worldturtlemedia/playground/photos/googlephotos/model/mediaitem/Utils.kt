@@ -6,10 +6,13 @@ import com.google.photos.types.proto.VideoProcessingStatus
 import org.joda.time.DateTime
 import com.google.photos.types.proto.MediaItem as ProtoMediaItem
 
-fun ProtoMediaItem.toModel(): MediaItem? = when {
-    mediaMetadata?.hasVideo() == true -> createVideoItem()
-    mediaMetadata?.hasPhoto() == true -> createPhotoItem()
-    else -> null
+fun ProtoMediaItem.toModel(): MediaItem? = mediaMetadata?.run {
+    when {
+        hasVideo() && hasPhoto() -> null // TODO: This is a "LivePhoto"
+        hasVideo() -> createVideoItem()
+        hasPhoto() -> createPhotoItem()
+        else -> null
+    }
 }
 
 fun List<ProtoMediaItem>.toModels() = mapNotNull { it.toModel() }

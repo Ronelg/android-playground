@@ -14,11 +14,13 @@ abstract class FunctionFactory {
     protected val functions by lazy { Firebase.functions }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    protected suspend fun <R> safeCall(function: String, data: Any? = null): Result<R> =
+    protected suspend fun <R> safeCall(
+        function: String, params: Any? = null
+    ): Result<R> =
         suspendCancellableCoroutine { continuation ->
             functions
                 .getHttpsCallable(function)
-                .call(data)
+                .call(params)
                 .addOnCompleteListener { task ->
                     continuation.resume(getResult(function, task))
                 }
@@ -26,8 +28,8 @@ abstract class FunctionFactory {
 
     protected suspend fun hashMapCall(
         function: String,
-        data: Any? = null
-    ): Result<HashMap<String, Any>> = safeCall(function, data)
+        params: Any? = null
+    ): Result<HashMap<String, Any>> = safeCall(function, params)
 
     private fun <R> getResult(function: String, task: Task<HttpsCallableResult>): Result<R> =
         if (task.isSuccessful) {

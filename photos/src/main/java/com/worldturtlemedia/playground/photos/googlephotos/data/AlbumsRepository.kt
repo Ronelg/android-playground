@@ -6,9 +6,9 @@ import com.google.api.gax.rpc.ApiException
 import com.google.photos.library.v1.internal.InternalPhotosLibraryClient
 import com.worldturtlemedia.playground.common.ktx.emitAndLog
 import com.worldturtlemedia.playground.photos.db.PhotosDatabase
-import com.worldturtlemedia.playground.photos.googlephotos.data.db.AlbumDao
-import com.worldturtlemedia.playground.photos.googlephotos.data.db.mapToModel
-import com.worldturtlemedia.playground.photos.googlephotos.data.db.toEntities
+import com.worldturtlemedia.playground.photos.googlephotos.data.db.album.AlbumDao
+import com.worldturtlemedia.playground.photos.googlephotos.data.db.album.mapToModel
+import com.worldturtlemedia.playground.photos.googlephotos.data.db.album.toEntities
 import com.worldturtlemedia.playground.photos.googlephotos.model.Album
 import com.worldturtlemedia.playground.photos.googlephotos.model.toModelList
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.flow
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AlbumsRepository(
-    private val delegate: PhotosClientFactory,
+    delegate: PhotosClientFactory,
     private val albumDao: AlbumDao
 ) : PhotosClient by delegate {
 

@@ -1,4 +1,4 @@
-package com.worldturtlemedia.playground.photos.googlephotos.data.db
+package com.worldturtlemedia.playground.photos.googlephotos.data.db.album
 
 import androidx.room.*
 import kotlinx.coroutines.flow.Flow

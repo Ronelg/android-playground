@@ -18,6 +18,7 @@ import com.worldturtlemedia.playground.photos.databinding.ListFilterFragmentBind
 import com.worldturtlemedia.playground.photos.databinding.ListFilterFragmentBinding.bind
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
+import com.xwray.groupie.Section
 import kotlinx.android.synthetic.main.list_filter_fragment.*
 import kotlinx.coroutines.launch
 

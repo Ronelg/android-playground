@@ -20,3 +20,12 @@ fun String?.parseLongOrNull(): Long? = try {
 }
 
 fun String?.parseLong(default: Long) = parseLongOrNull() ?: default
+
+val Int.seconds
+    get() = this * 1000
+
+val Int.minutes
+    get() = seconds * 60
+
+val Int.hours
+    get() = minutes * 60

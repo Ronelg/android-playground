@@ -1,10 +1,10 @@
-package com.worldturtlemedia.playground.photos.googlephotos.data.db
+package com.worldturtlemedia.playground.photos.googlephotos.data.db.album
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.worldturtlemedia.playground.common.core.Mapper
-import com.worldturtlemedia.playground.photos.googlephotos.data.db.AlbumEntity.Companion.TABLE_NAME
+import com.worldturtlemedia.playground.photos.googlephotos.data.db.album.AlbumEntity.Companion.TABLE_NAME
 import com.worldturtlemedia.playground.photos.googlephotos.model.Album
 
 @Entity(tableName = TABLE_NAME)
@@ -36,12 +36,13 @@ data class AlbumEntity(
 
 fun List<AlbumEntity>.mapToModel() = map { entity -> entity.map() }
 
-fun Album.toEntity() = AlbumEntity(
-    id = id,
-    title = title,
-    productUrl = productUrl,
-    itemCount = itemCount,
-    coverPhotoUrl = coverPhotoUrl
-)
+fun Album.toEntity() =
+    AlbumEntity(
+        id = id,
+        title = title,
+        productUrl = productUrl,
+        itemCount = itemCount,
+        coverPhotoUrl = coverPhotoUrl
+    )
 
 fun List<Album>.toEntities() = map { album -> album.toEntity() }

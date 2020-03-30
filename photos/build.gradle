@@ -73,6 +73,7 @@ dependencies {
     implementation(Libs.groupie_kotlin_android_extensions)
     implementation(Libs.coil)
     implementation(Libs.inline_activity_result_kotlin)
+    implementation("com.afollestad:drag-select-recyclerview:2.4.0")
 
     implementation(Libs.kotpref)
     implementation(Libs.joda_time)
@@ -97,4 +98,7 @@ dependencies {
 
     /* Misc */
     implementation(Libs.timberkt)
+
+    /* Experimental */
+    implementation "com.github.haroldadmin:Vector:0.6.0"
 }

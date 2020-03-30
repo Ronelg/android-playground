@@ -10,10 +10,9 @@ sealed class MediaItem {
     abstract val mimeType: String
     abstract val creationTime: DateTime
 
-    abstract val downloadUrl: String
+    abstract fun downloadUrl(): String
 
-    val thumbnailUrl: String
-        get() = createMediaThumbnailUrl(baseUrl)
+    fun thumbnailUrl(): String = createMediaThumbnailUrl(baseUrl)
 }
 
 data class VideoItem(
@@ -25,7 +24,7 @@ data class VideoItem(
     val fps: Double
 ) : MediaItem() {
 
-    override val downloadUrl: String = "$baseUrl=d"
+    override fun downloadUrl(): String = "$baseUrl=d"
 }
 
 data class PhotoItem(
@@ -36,7 +35,7 @@ data class PhotoItem(
     override val creationTime: DateTime
 ) : MediaItem() {
 
-    override val downloadUrl: String = "$baseUrl=dv"
+    override fun downloadUrl(): String = "$baseUrl=dv"
 }
 
 val MediaItem.isVideo: Boolean

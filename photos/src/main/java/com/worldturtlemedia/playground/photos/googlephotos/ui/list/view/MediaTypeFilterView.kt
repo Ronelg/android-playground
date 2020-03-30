@@ -27,9 +27,10 @@ class MediaTypeFilterView : HorizontalScrollView {
 
     private var filterClickedListener: (MediaFilter) -> Unit = {}
 
-    private val buttons = listOf(MediaFilter.All, MediaFilter.Video, MediaFilter.Photo)
-        .map { type -> type to createTextView(type) }
-        .toMap()
+    private val buttons =
+        listOf(MediaFilter.All, MediaFilter.Video, MediaFilter.Photo)
+            .map { type -> type to createTextView(type) }
+            .toMap()
 
     override fun onFinishInflate() {
         super.onFinishInflate()
