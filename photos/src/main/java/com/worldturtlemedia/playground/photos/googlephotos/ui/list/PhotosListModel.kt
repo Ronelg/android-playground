@@ -31,13 +31,11 @@ class PhotosListModel : StateViewModel<PhotosListState>(PhotosListState()) {
     init {
         viewModelScope.launch(Dispatchers.IO) {
             authRepo.state.distinctUntilChanged().collect { state ->
-                if (state is GoogleAuthState.Authenticated) {
-                    libraryRepo.debugFetchLibraryItems().collect { result ->
-                        if (result is ApiResult.Success) {
-                            setState {
-                                copy(items = items.merge(result.result))
-                            }
-                        }
+                if (state !is GoogleAuthState.Authenticated) return@collect
+
+                libraryRepo.debugFetchLibraryItems().collect { result ->
+                    if (result is ApiResult.Success) {
+                        setState { copy(items = items.merge(result.result)) }
                     }
                 }
             }
