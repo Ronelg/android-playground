@@ -2,7 +2,6 @@ package com.worldturtlemedia.playground.photos.googlephotos.ui.filter
 
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
@@ -18,9 +17,7 @@ import com.worldturtlemedia.playground.photos.databinding.ListFilterFragmentBind
 import com.worldturtlemedia.playground.photos.databinding.ListFilterFragmentBinding.bind
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
-import com.xwray.groupie.Section
 import kotlinx.android.synthetic.main.list_filter_fragment.*
-import kotlinx.coroutines.launch
 
 class ListFilterFragment : BaseFragment<ListFilterFragmentBinding>(R.layout.list_filter_fragment) {
 
@@ -33,11 +30,6 @@ class ListFilterFragment : BaseFragment<ListFilterFragmentBinding>(R.layout.list
     private val listAdapter by lazy { GroupAdapter<GroupieViewHolder>() }
 
     override fun setupViews() = withBinding {
-        txtDateRangeClear.onClick { viewModel.setDateRange(null) }
-        btnChooseDateRange.onClick {
-            lifecycleScope.launch { viewModel.showDateRangeDialog(childFragmentManager) }
-        }
-
         txtCategoryClear.onClick { viewModel.clearCategoryFilters() }
 
         btnClose.onClick { viewModel.close() }
@@ -62,8 +54,6 @@ class ListFilterFragment : BaseFragment<ListFilterFragmentBinding>(R.layout.list
         }
 
         viewModel.observe(owner) { state ->
-            binding.txtDateRange.text = state.dateFilter?.toString() ?: ""
-
             listAdapter.update(createCategoryFilterItems(state.categoryFilters))
 
             with(binding.btnApply) {

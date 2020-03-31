@@ -68,7 +68,7 @@ abstract class StateViewModel<S : State>(initialState: S) : ViewModel() {
      * @param[source] LiveData to adapt.
      * @param[onChange] Lambda expression to convert the [source] data to a [S].
      */
-    protected fun <T> addStateSource(source: LiveData<T>, onChange: S.(data: T) -> S?) {
+    protected fun <T> addStateSource(source: LiveData<T>, onChange: suspend S.(data: T) -> S?) {
         _state.addSource(source) { data ->
             setState { onChange(currentState, data) }
         }

@@ -201,6 +201,9 @@ object Libs {
             "com.google.firebase:firebase-crashlytics-gradle:" +
             Versions.firebase_crashlytics_gradle
 
+    const val drag_select_recyclerview: String = "com.afollestad:drag-select-recyclerview:" +
+            Versions.drag_select_recyclerview
+
     const val firebase_functions_ktx: String = "com.google.firebase:firebase-functions-ktx:" +
             Versions.firebase_functions_ktx
 
@@ -283,6 +286,11 @@ object Libs {
      * https://github.com/chibatching/kotpref
      */
     const val kotpref: String = "com.chibatching.kotpref:kotpref:" + Versions.kotpref
+
+    /**
+     * https://haroldadmin.github.io/Vector/
+     */
+    const val vector: String = "com.github.haroldadmin:Vector:" + Versions.vector
 
     /**
      * https://developer.android.com/studio

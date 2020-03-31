@@ -43,6 +43,8 @@ object Versions {
 
     const val firebase_crashlytics_gradle: String = "2.0.0-beta02"
 
+    const val drag_select_recyclerview: String = "2.4.0"
+
     const val firebase_functions_ktx: String = "19.0.2"
 
     const val firebase_crashlytics: String = "17.0.0-beta01"
@@ -77,11 +79,13 @@ object Versions {
 
     const val material: String = "1.1.0"
 
-    const val retrofit: String = "2.8.0"
+    const val retrofit: String = "2.8.0" // available: "2.8.1"
 
     const val timberkt: String = "1.5.1"
 
     const val kotpref: String = "2.10.0"
+
+    const val vector: String = "0.6.0" // available: "0.6.1"
 
     const val aapt2: String = "3.6.1-6040484"
 
@@ -92,7 +96,7 @@ object Versions {
      * See issue 19: How to update Gradle itself?
      * https://github.com/jmfayard/buildSrcVersions/issues/19
      */
-    const val gradleLatestVersion: String = "6.2.2"
+    const val gradleLatestVersion: String = "6.3"
 }
 
 /**

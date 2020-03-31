@@ -71,6 +71,9 @@ class PhotosClientFactory(
         } catch (error: ApiException) {
             e(error) { "Failed to make API request!" }
             ApiResult.Fail(ApiError.RequestFail)
+        } catch (error: Throwable) {
+            e (error) { "API Request failed for unknown reason"}
+            ApiResult.Fail(ApiError.Error(error))
         }
     }
 

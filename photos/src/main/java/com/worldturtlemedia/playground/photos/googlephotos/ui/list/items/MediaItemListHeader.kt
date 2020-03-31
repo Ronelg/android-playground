@@ -6,12 +6,10 @@ import com.worldturtlemedia.playground.common.ktx.context
 import com.worldturtlemedia.playground.photos.R
 import com.worldturtlemedia.playground.photos.databinding.MediaItemListHeaderBinding
 import com.worldturtlemedia.playground.photos.databinding.MediaItemListHeaderBinding.bind
+import com.xwray.groupie.Item
 
 data class MediaItemListHeader(
-    private val dateString: String,
-    private val anySelected: Boolean,
-    private val totalItemCount: Int,
-    private val onSelectToggle: () -> Unit
+    private val dateString: String
 ) : ViewBindingItem<MediaItemListHeaderBinding>() {
 
     override fun getLayout(): Int = R.layout.media_item_list_header
@@ -21,13 +19,8 @@ data class MediaItemListHeader(
     override fun bind(viewBinding: MediaItemListHeaderBinding, position: Int) {
         with(viewBinding) {
             txtDate.text = dateString
-
-            val itemCountText =
-                if (anySelected) context.getString(R.string.mash_selection_deselect)
-                else context.getString(R.string.mash_selection_select, totalItemCount)
-
-            txtSelectToggle.text = itemCountText
-            txtSelectToggle.setOnClickListener { onSelectToggle() }
         }
     }
+
+    override fun getId(): Long = dateString.hashCode().toLong()
 }

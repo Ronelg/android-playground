@@ -40,55 +40,6 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.07" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnChooseDateRange"
-        style="?attr/materialButtonOutlinedStyle"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:text="Choose Date Range"
-        android:textAllCaps="false"
-        android:textColor="@color/white"
-        app:cornerRadius="15dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/guidelineTop"
-        app:strokeColor="@color/grey" />
-
-    <TextView
-        android:id="@+id/txtDateRange"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:textColor="@color/white"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/btnChooseDateRange"
-        app:layout_constraintTop_toBottomOf="@+id/btnChooseDateRange"
-        tools:text="Jan 12 2019 - Jan 15 2020" />
-
-    <TextView
-        android:id="@+id/txtDateRangeClear"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:background="?attr/selectableItemBackground"
-        android:text="@string/clear"
-        android:textColor="@color/white"
-        app:layout_constraintBottom_toBottomOf="@+id/btnChooseDateRange"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/btnChooseDateRange" />
-
-    <View
-        android:id="@+id/dividerDate"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="32dp"
-        android:background="@color/divider"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/txtDateRange" />
-
     <TextView
         android:id="@+id/txtCategoryTitle"
         android:layout_width="wrap_content"
@@ -101,7 +52,7 @@
         android:textColor="@color/white"
         android:textSize="15sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dividerDate" />
+        app:layout_constraintTop_toBottomOf="@+id/guidelineTop" />
 
     <TextView
         android:id="@+id/txtCategorySubtitle"
@@ -162,8 +113,10 @@
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
         android:backgroundTint="@drawable/tint_state_accent"
+        android:lines="1"
         android:textAllCaps="false"
         android:textColor="@color/white"
+        android:textSize="12sp"
         app:cornerRadius="15dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -183,6 +136,7 @@
         android:text="Clear All"
         android:textAllCaps="false"
         android:textColor="@color/white"
+        android:textSize="12sp"
         app:cornerRadius="15dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/btnApply"

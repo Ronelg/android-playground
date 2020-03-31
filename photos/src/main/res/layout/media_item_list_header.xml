@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="50dp"
-    android:background="@color/background">
+    android:background="@color/colorPrimaryDark">
 
     <TextView
         android:id="@+id/txtDate"
@@ -17,19 +17,5 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Today, June 12, 2020" />
-
-    <TextView
-        android:id="@+id/txtSelectToggle"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:gravity="center"
-        android:paddingStart="13dp"
-        android:paddingEnd="13dp"
-        android:textSize="14sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="@string/mash_selection_select" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

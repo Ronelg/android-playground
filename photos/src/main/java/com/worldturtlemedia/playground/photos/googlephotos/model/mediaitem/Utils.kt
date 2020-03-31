@@ -15,7 +15,7 @@ fun ProtoMediaItem.toModel(): MediaItem? = mediaMetadata?.run {
     }
 }
 
-fun List<ProtoMediaItem>.toModels() = mapNotNull { it.toModel() }
+fun Iterable<ProtoMediaItem>.toModels(): List<MediaItem> = mapNotNull { it.toModel() }
 
 private fun ProtoMediaItem.createVideoItem(): VideoItem? {
     if (mediaMetadata.video.status != VideoProcessingStatus.READY) {
@@ -28,7 +28,7 @@ private fun ProtoMediaItem.createVideoItem(): VideoItem? {
         baseUrl = baseUrl,
         dimensions = mediaMetadata.extractDimensions,
         mimeType = mimeType,
-        creationTime = DateTime(mediaMetadata.creationTime),
+        creationTime = mediaMetadata.createdAt,
         fps = mediaMetadata.video.fps
     )
 }
@@ -38,8 +38,11 @@ private fun ProtoMediaItem.createPhotoItem() = PhotoItem(
     baseUrl = baseUrl,
     dimensions = mediaMetadata.extractDimensions,
     mimeType = mimeType,
-    creationTime = DateTime(mediaMetadata.creationTime)
+    creationTime = mediaMetadata.createdAt
 )
 
 private val MediaMetadata.extractDimensions: Dimensions
     get() = Dimensions(width = width, height = height)
+
+private val MediaMetadata.createdAt: DateTime
+    get() = DateTime(creationTime.seconds * 1000)

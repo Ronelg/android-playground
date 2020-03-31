@@ -10,8 +10,10 @@ import com.worldturtlemedia.playground.photos.databinding.MediaItemListItemBindi
 import com.worldturtlemedia.playground.photos.databinding.MediaItemListItemBinding.bind
 import com.worldturtlemedia.playground.photos.googlephotos.model.mediaitem.MediaItem
 import com.worldturtlemedia.playground.photos.googlephotos.model.mediaitem.Orientation
+import com.worldturtlemedia.playground.photos.googlephotos.model.mediaitem.PhotoItem
+import com.worldturtlemedia.playground.photos.googlephotos.model.mediaitem.VideoItem
 
-abstract class MediaItemListItem : ViewBindingItem<MediaItemListItemBinding>() {
+sealed class MediaItemListItem : ViewBindingItem<MediaItemListItemBinding>() {
 
     override fun getLayout(): Int = R.layout.media_item_list_item
 
@@ -36,11 +38,34 @@ abstract class MediaItemListItem : ViewBindingItem<MediaItemListItemBinding>() {
         with(viewBinding) {
             orientationIndicator.setImageResource(orientationIconRes)
             typeIndicator.setImageResource(mediaTypeIconRes)
-            selectedOverlay.root.visibleOrGone = isSelected
+            overlay.root.visibleOrGone = isSelected
 
             thumbnail.load(mediaItem.thumbnailUrl())
         }
     }
 
     override fun getId(): Long = mediaItem.id.hashCode().toLong()
+}
+
+data class PhotoListItem(
+    override val mediaItem: MediaItem,
+    override val isSelected: Boolean
+) : MediaItemListItem() {
+
+    override val mediaTypeIconRes: Int = R.drawable.ic_photo
+}
+
+data class VideoListItem(
+    override val mediaItem: MediaItem,
+    override val isSelected: Boolean
+) : MediaItemListItem() {
+
+    override val mediaTypeIconRes: Int = R.drawable.ic_video
+}
+
+fun createMediaItemListItems(items: List<MediaItem>) = items.map { item ->
+    when (item) {
+        is VideoItem -> VideoListItem(item, false)
+        is PhotoItem -> PhotoListItem(item, false)
+    }
 }
