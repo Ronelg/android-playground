@@ -38,7 +38,7 @@ class DebugFragment : BaseFragment<DebugFragmentBinding>(R.layout.debug_fragment
                     is ApiResult.Fail -> binding.txtFailure.text = result.error.toString()
                     is ApiResult.Success -> {
                         val elapsed = (System.currentTimeMillis() - start) / 1000
-                        displayAlbumResults(result.result, elapsed)
+                        displayAlbumResults(result.data, elapsed)
                     }
                 }
             }

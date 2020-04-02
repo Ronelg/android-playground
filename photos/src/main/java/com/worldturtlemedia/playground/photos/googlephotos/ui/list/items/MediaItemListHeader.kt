@@ -2,15 +2,18 @@ package com.worldturtlemedia.playground.photos.googlephotos.ui.list.items
 
 import android.view.View
 import com.worldturtlemedia.playground.common.base.ui.groupie.ViewBindingItem
-import com.worldturtlemedia.playground.common.ktx.context
 import com.worldturtlemedia.playground.photos.R
 import com.worldturtlemedia.playground.photos.databinding.MediaItemListHeaderBinding
 import com.worldturtlemedia.playground.photos.databinding.MediaItemListHeaderBinding.bind
-import com.xwray.groupie.Item
+import org.joda.time.LocalDate
 
 data class MediaItemListHeader(
-    private val dateString: String
+    private val date: LocalDate
 ) : ViewBindingItem<MediaItemListHeaderBinding>() {
+
+    companion object {
+        const val MONTH_YEAR_PATTERN = "MMMM d, Y"
+    }
 
     override fun getLayout(): Int = R.layout.media_item_list_header
 
@@ -18,9 +21,9 @@ data class MediaItemListHeader(
 
     override fun bind(viewBinding: MediaItemListHeaderBinding, position: Int) {
         with(viewBinding) {
-            txtDate.text = dateString
+            txtDate.text = date.toString(MONTH_YEAR_PATTERN)
         }
     }
 
-    override fun getId(): Long = dateString.hashCode().toLong()
+    override fun getId(): Long = date.toString().hashCode().toLong()
 }

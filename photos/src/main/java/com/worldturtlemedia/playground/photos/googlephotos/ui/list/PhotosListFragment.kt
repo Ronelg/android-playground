@@ -1,31 +1,38 @@
 package com.worldturtlemedia.playground.photos.googlephotos.ui.list
 
+import android.os.Parcelable
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.GridLayoutManager
 import com.github.ajalt.timberkt.e
 import com.worldturtlemedia.playground.common.base.ui.BaseFragment
 import com.worldturtlemedia.playground.common.base.ui.viewbinding.viewBinding
-import com.worldturtlemedia.playground.common.ktx.navigate
-import com.worldturtlemedia.playground.common.ktx.visibleOrGone
+import com.worldturtlemedia.playground.common.ktx.*
 import com.worldturtlemedia.playground.photos.R
 import com.worldturtlemedia.playground.photos.auth.data.GoogleAuthState.*
 import com.worldturtlemedia.playground.photos.auth.data.errorOrNull
 import com.worldturtlemedia.playground.photos.auth.ui.PhotosAuthModel
 import com.worldturtlemedia.playground.photos.databinding.PhotosListFragmentBinding
 import com.worldturtlemedia.playground.photos.databinding.PhotosListFragmentBinding.bind
-import com.worldturtlemedia.playground.photos.googlephotos.ui.list.items.MediaItemListHeader
-import com.worldturtlemedia.playground.photos.googlephotos.ui.list.items.createMediaItemListItems
-import com.xwray.groupie.GroupAdapter
-import com.xwray.groupie.GroupieViewHolder
-import com.xwray.groupie.Section
+import com.worldturtlemedia.playground.photos.googlephotos.ui.Constants.NUMBER_OF_COLUMNS
+import com.worldturtlemedia.playground.photos.googlephotos.ui.list.items.MediaItemListAdapter
+import com.worldturtlemedia.playground.photos.googlephotos.ui.list.items.MediaItemListItem
+import kotlinx.android.parcel.Parcelize
+import org.joda.time.LocalDate
 
-class PhotosListFragment : BaseFragment<PhotosListFragmentBinding>(R.layout.photos_list_fragment) {
+@Parcelize
+data class PhotoListArgs(
+    val selectedDate: LocalDate
+) : Parcelable {
 
     companion object {
-        const val NUMBER_OF_COLUMNS_PORTRAIT = 3
+        val default = PhotoListArgs(selectedDate = LocalDate.now())
     }
+}
+
+class PhotosListFragment : BaseFragment<PhotosListFragmentBinding>(R.layout.photos_list_fragment) {
 
     override val binding: PhotosListFragmentBinding by viewBinding { bind(it) }
 
@@ -33,7 +40,11 @@ class PhotosListFragment : BaseFragment<PhotosListFragmentBinding>(R.layout.phot
 
     private val viewModel: PhotosListModel by viewModels()
 
-    private val listAdapter by lazy { GroupAdapter<GroupieViewHolder>() }
+    private val navArgs by navArgs<PhotosListFragmentArgs>()
+
+    private val args by lazy { navArgs.args ?: PhotoListArgs.default }
+
+    private val listAdapter = MediaItemListAdapter()
 
     override fun setupViews() = withBinding {
         toolbar.onFilterClicked = {
@@ -46,35 +57,41 @@ class PhotosListFragment : BaseFragment<PhotosListFragmentBinding>(R.layout.phot
 
         mediaTypeFilter.onFilterClicked { viewModel.changeMediaType(it) }
 
-        viewAuthError.onRetry = { authViewModel.showAuthDialogIfNeeded(this@PhotosListFragment) }
+        viewAuthError.onRetry = {
+            authViewModel.showAuthDialogIfNeeded(this@PhotosListFragment)
+        }
 
-        viewUnauthenticated.onRetry =
-            { authViewModel.showAuthDialogIfNeeded(this@PhotosListFragment) }
+        viewUnauthenticated.onRetry = {
+            authViewModel.showAuthDialogIfNeeded(this@PhotosListFragment)
+        }
 
         setupRecyclerView()
     }
 
     override fun observeViewModel() {
         authViewModel.init(requireContext())
+        viewModel.setTargetDate(args.selectedDate)
 
         viewModel.state.observe(owner) { state ->
             binding.mediaTypeFilter.setSelected(state.mediaFilter)
         }
 
-        viewModel.observeProperty(owner, { it.items }) { items ->
+        viewModel.onStateChange(owner, { it.groupedItems }) { state ->
             val start = System.currentTimeMillis()
 
-            val mediaItemGroups = items.groupedByDate().map { (dateString, itemsForDay) ->
-                Section().apply {
-                    setHideWhenEmpty(true)
-                    setHeader(MediaItemListHeader(dateString = dateString))
-                    update(createMediaItemListItems(itemsForDay))
-                }
-            }
-
-            listAdapter.updateAsync(mediaItemGroups) {
+            listAdapter.updateGroupedMediaItems(state.groupedItems) {
                 val duration = (System.currentTimeMillis() - start) / 1000.0
-                e { "Took $duration seconds to render ${items.size} items" }
+                e { "Took $duration seconds to render ${state.groupedItems.flatMap { it.second }.size} items" }
+
+                if (!state.finishedInitialLoad) {
+                    val position = listAdapter.getPositionOfTargetDate(state.targetDate)
+                    if (position != null) {
+                        e { "Scrolling to $position" }
+                        binding.recyclerView.stopScroll()
+                        binding.recyclerView.layoutManager?.cast<GridLayoutManager>()
+                            ?.scrollToPositionWithOffset(position, 0)
+                    }
+                }
             }
         }
 
@@ -99,12 +116,10 @@ class PhotosListFragment : BaseFragment<PhotosListFragmentBinding>(R.layout.phot
     }
 
     private fun createLayoutManager() =
-        GridLayoutManager(requireContext(), NUMBER_OF_COLUMNS_PORTRAIT).apply {
-            spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
-                override fun getSpanSize(position: Int): Int {
-                    return if (listAdapter.getItem(position) !is MediaItemListHeader) 1
-                    else NUMBER_OF_COLUMNS_PORTRAIT
-                }
+        createGridLayoutManager(requireContext(), NUMBER_OF_COLUMNS) {
+            buildSpanSizeLookup { position ->
+                val item = listAdapter.getItem(position)
+                if (item is MediaItemListItem) 1 else NUMBER_OF_COLUMNS
             }
         }
 }

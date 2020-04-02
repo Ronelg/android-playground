@@ -3,17 +3,19 @@ package com.worldturtlemedia.playground.photos.googlephotos.model.filter
 import com.google.photos.library.v1.proto.Filters
 import com.google.photos.types.proto.DateRange
 import com.google.type.Date
+import com.worldturtlemedia.playground.common.ktx.createInterval
 import org.joda.time.DateTime
 import org.joda.time.Interval
+import org.joda.time.LocalDate
 import com.google.photos.library.v1.proto.DateFilter as GDateFilter
 
 sealed class DateFilter : Filter {
 
-    data class Year(val value: DateTime) : DateFilter()
-    data class YearMonth(val value: DateTime) : DateFilter()
-    data class YearMonthDay(val value: DateTime) : DateFilter()
-    data class Month(val value: DateTime) : DateFilter()
-    data class MonthDay(val value: DateTime) : DateFilter()
+    data class Year(val value: LocalDate) : DateFilter()
+    data class YearMonth(val value: LocalDate) : DateFilter()
+    data class YearMonthDay(val value: LocalDate) : DateFilter()
+    data class Month(val value: LocalDate) : DateFilter()
+    data class MonthDay(val value: LocalDate) : DateFilter()
 
     data class Range(val interval: Interval) : DateFilter() {
 
@@ -52,5 +54,10 @@ sealed class DateFilter : Filter {
         }
     }.build()
 
-    private fun DateTime.toDateFilter() = buildDate(YearMonthDay(this))
+    private fun DateTime.toDateFilter() = buildDate(YearMonthDay(toLocalDate()))
+
+    companion object {
+
+        fun range(start: LocalDate, end: LocalDate) = DateFilter.Range(createInterval(start, end))
+    }
 }

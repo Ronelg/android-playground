@@ -58,4 +58,6 @@ dependencies {
 
     /* Misc */
     implementation(Libs.timberkt)
+    implementation(Libs.joda_time)
+    implementation(Libs.koda_time)
 }

@@ -8,6 +8,8 @@
     <color name="colorAccentLight">#0EB3A3</color>
     <color name="colorAccentDark">#07453F</color>
 
+    <color name="background">@color/colorPrimary</color>
+
     <color name="dialogBackground">#F3F3F3</color>
     <color name="black">#000</color>
     <color name="white">#fff</color>

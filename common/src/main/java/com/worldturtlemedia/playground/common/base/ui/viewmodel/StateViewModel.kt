@@ -37,6 +37,15 @@ abstract class StateViewModel<S : State>(initialState: S) : ViewModel() {
         onChange: (value: Property) -> Unit
     ) = state.observeProperty(owner, property, onChange)
 
+    fun <Property> onStateChange(
+        owner: LifecycleOwner,
+        property: (S) -> Property,
+        onChange: (value: S) -> Unit
+    ) {
+        val current = state
+        current.map(property).distinctUntilChanged().observe(owner) { current.value?.let(onChange) }
+    }
+
     /**
      * Create an [actor] that will consume each [Update], invoke the lambda, then update the state
      * if needed.

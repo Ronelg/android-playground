@@ -96,5 +96,5 @@ dependencies {
     /* Misc */
     implementation(Libs.timberkt)
     implementation(Libs.firebase_crashlytics)
-    debugImplementation(Libs.leakcanary_android)
+//    debugImplementation(Libs.leakcanary_android)
 }

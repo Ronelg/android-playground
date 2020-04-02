@@ -53,7 +53,7 @@ class AlbumsRepository(
                 is ApiResult.Fail -> emit(remoteResult)
                 is ApiResult.Success -> {
                     // Store the new albums in the database
-                    storeAPIResultInDatabase(remoteResult.result)
+                    storeAPIResultInDatabase(remoteResult.data)
 
                     // Return the album values from the database
                     emit(ApiResult.Success(loadAlbumsFromDatabase()))
@@ -124,7 +124,7 @@ class AlbumsRepository(
         }
 
         val list = mutableListOf<Album>()
-        var page = firstLoad.result.page
+        var page = firstLoad.data.page
         var count = 1
         do {
             i { "Loading page $count" }

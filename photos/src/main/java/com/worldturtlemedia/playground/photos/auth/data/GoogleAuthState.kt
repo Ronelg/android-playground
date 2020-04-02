@@ -15,7 +15,7 @@ sealed class GoogleAuthState {
     companion object {
 
         fun from(account: GoogleSignInAccount?, token: AccessToken?): GoogleAuthState {
-            if (account == null || account.isExpired || token == null) return Unauthenticated
+            if (account == null || token == null) return Unauthenticated
 
             return try {
                 Authenticated(

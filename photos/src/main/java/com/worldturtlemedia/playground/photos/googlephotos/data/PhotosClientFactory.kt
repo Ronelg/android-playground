@@ -15,6 +15,7 @@ import com.worldturtlemedia.playground.photos.auth.data.GoogleAuthRepo
 import com.worldturtlemedia.playground.photos.auth.data.GoogleAuthRepoFactory
 import com.worldturtlemedia.playground.photos.auth.data.GoogleAuthState
 import com.worldturtlemedia.playground.photos.config.PhotosConfig
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -23,6 +24,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 import java.io.IOException
+import kotlin.coroutines.coroutineContext
 
 interface PhotosClient {
     suspend fun <T> safeApiCall(
@@ -68,6 +70,9 @@ class PhotosClientFactory(
             i { "Received: $result" }
 
             ApiResult.Success(result)
+        } catch (error: CancellationException) {
+            e(error) { "Job was cancelled"}
+            throw error
         } catch (error: ApiException) {
             e(error) { "Failed to make API request!" }
             ApiResult.Fail(ApiError.RequestFail)

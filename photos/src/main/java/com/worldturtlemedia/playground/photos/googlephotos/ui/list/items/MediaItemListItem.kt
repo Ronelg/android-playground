@@ -40,7 +40,9 @@ sealed class MediaItemListItem : ViewBindingItem<MediaItemListItemBinding>() {
             typeIndicator.setImageResource(mediaTypeIconRes)
             overlay.root.visibleOrGone = isSelected
 
-            thumbnail.load(mediaItem.thumbnailUrl())
+            thumbnail.load(mediaItem.thumbnailUrl()) {
+                crossfade(true)
+            }
         }
     }
 
@@ -61,11 +63,4 @@ data class VideoListItem(
 ) : MediaItemListItem() {
 
     override val mediaTypeIconRes: Int = R.drawable.ic_video
-}
-
-fun createMediaItemListItems(items: List<MediaItem>) = items.map { item ->
-    when (item) {
-        is VideoItem -> VideoListItem(item, false)
-        is PhotoItem -> PhotoListItem(item, false)
-    }
 }

@@ -3,7 +3,7 @@ package com.worldturtlemedia.playground.photos.googlephotos.data
 sealed class ApiResult<out T> {
     data class Fail(val error: ApiError) : ApiResult<Nothing>()
     object Loading : ApiResult<Nothing>()
-    data class Success<T>(val result: T) : ApiResult<T>()
+    data class Success<T>(val data: T) : ApiResult<T>()
 }
 
 sealed class ApiError {

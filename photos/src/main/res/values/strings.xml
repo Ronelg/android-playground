@@ -29,4 +29,6 @@
     <string name="mash_selection_select">Select (%1$d)</string>
     <string name="mash_selection_deselect_all">Deselect (All)</string>
     <string name="mash_selection_deselect">Deselect</string>
+    <string name="today">Today</string>
+    <string name="no_media">No media available for this day on Google Photos</string>
 </resources>
