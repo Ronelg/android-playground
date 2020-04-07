@@ -5,8 +5,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.github.ajalt.timberkt.e
-import com.worldturtlemedia.playground.common.base.ui.dialog.showDialog
+import com.worldturtlemedia.playground.common.base.ui.dialog.showAsync
 import com.worldturtlemedia.playground.common.base.ui.viewmodel.State
 import com.worldturtlemedia.playground.common.base.ui.viewmodel.StateViewModel
 import com.worldturtlemedia.playground.common.core.SingleEvent
@@ -17,6 +16,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class PhotosAuthModel : StateViewModel<PhotosAuthState>(PhotosAuthState()) {
+
+    override val isDebugMode: Boolean = true
 
     private val googleAuthRepo = GoogleAuthRepoFactory.instance
 
@@ -33,16 +34,14 @@ class PhotosAuthModel : StateViewModel<PhotosAuthState>(PhotosAuthState()) {
     }
 
     fun showAuthDialogIfNeeded(fragment: Fragment) {
-        val test = googleAuthRepo.currentState
-        e { "showAuthDialog: currentstate $test" }
-        if (currentState.isAuthenticated) return
+        val authState = googleAuthRepo.currentState
+        if (authState is GoogleAuthState.Authenticated) return
 
-        val dialog = ConnectGooglePhotosDialog().onDismiss {
+        setState { copy(isShowingAuthDialog = true) }
+        viewModelScope.launch {
+            ConnectGooglePhotosDialog().showAsync(fragment)
             setState { copy(isShowingAuthDialog = false) }
         }
-
-        fragment.showDialog(dialog)
-        setState { copy(isShowingAuthDialog = true) }
     }
 
     fun signIn(activity: FragmentActivity) = launchMain { googleAuthRepo.signIn(activity) }

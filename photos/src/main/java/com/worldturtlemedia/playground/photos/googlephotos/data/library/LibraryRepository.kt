@@ -9,11 +9,8 @@ import com.worldturtlemedia.playground.photos.googlephotos.model.filter.DateFilt
 import com.worldturtlemedia.playground.photos.googlephotos.model.filter.buildFilters
 import com.worldturtlemedia.playground.photos.googlephotos.model.mediaitem.MediaItem
 import com.worldturtlemedia.playground.photos.googlephotos.model.mediaitem.toModels
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.isActive
 import org.joda.time.LocalDate
 import kotlin.coroutines.coroutineContext
 
@@ -36,6 +33,7 @@ class LibraryRepository(
     suspend fun fetchMediaForDate(
         targetDate: LocalDate
     ) = flow<ApiResult<List<MediaItem>>> {
+        e { "Fetching for $targetDate" }
         val filter = buildFilters(DateFilter.YearMonthDay(targetDate))
 
         val start = System.currentTimeMillis()
@@ -56,15 +54,19 @@ class LibraryRepository(
         val flow2 = fetchItemsAfter(targetDate)
         val t = flowOf(flow1, flow2).flattenMerge()
         emitAll(t)
+//        emitAll(fetchItemsBefore(targetDate))
     }.flowOn(Dispatchers.IO)
 
     suspend fun fetchItemsBefore(
         targetDate: LocalDate,
         minimumItems: Int = 20,
-        daysBefore: Int = 15
-    ) = flow<ApiResult<List<MediaItem>>> {
-        e { "Starting before fetch!" }
-        val rangeStart = targetDate.minusDays(daysBefore)
+        monthsBefore: Int = 3,
+        maxCalls: Int = 4, // 12 Months
+        callCount: Int = 0,
+        previousItemCount: Int = 0
+    ): Flow<ApiResult<List<MediaItem>>> = flow {
+        e { "Starting before fetch! Call #${callCount + 1} with $previousItemCount existing items" }
+        val rangeStart = targetDate.minusMonths(monthsBefore)
         val rangeEnd = targetDate.minusDays(1)
         val filter = buildFilters(DateFilter.range(rangeStart, rangeEnd))
 
@@ -72,11 +74,13 @@ class LibraryRepository(
             val pages = client.searchMediaItems(filter).iteratePages()
             val allItems = mutableListOf<MediaItem>()
             for (page in pages) {
+                coroutineContext.ensureActive()
+
                 val items = page.values.toModels()
                 allItems.addAll(items)
                 emit(ApiResult.Success(items))
 
-                if (allItems.size >= minimumItems) {
+                if ((previousItemCount + allItems.size) >= minimumItems) {
                     e { "Met the minimum! time to break" }
                     break
                 }
@@ -87,8 +91,22 @@ class LibraryRepository(
 
         if (result !is ApiResult.Success) return@flow emit(result)
 
-        if (result.data.size < minimumItems) e { "Did not meet minimum items! ${result.data.size}" }
-        else e { "Met the minimum size! ${result.data.size}" }
+        val itemsCount = previousItemCount + result.data.size
+        if (callCount >= maxCalls && itemsCount < minimumItems) {
+            e { "Too many retries with not enough items... stopping" }
+        } else if (itemsCount >= minimumItems) {
+            e { "Met the minimum size! ${result.data.size} with ${callCount + 1} calls" }
+        } else {
+            e { "Did not meet minimum items! Attempting to recurse..." }
+            fetchItemsBefore(
+                targetDate = rangeStart,
+                minimumItems = minimumItems,
+                monthsBefore = monthsBefore,
+                maxCalls = maxCalls,
+                callCount = callCount + 1,
+                previousItemCount = itemsCount
+            ).let { emitAll(it) }
+        }
     }
 
     suspend fun fetchItemsAfter(
@@ -97,12 +115,18 @@ class LibraryRepository(
         daysAfter: Int = 15
     ) = flow<ApiResult<List<MediaItem>>> {
         e { "Starting after fetch!" }
-        if (targetDate.isEqual(LocalDate.now())) return@flow
 
         val allItems = mutableListOf<MediaItem>()
         for (day in 1 until daysAfter) {
+            coroutineContext.ensureActive()
+
             val date = targetDate.plusDays(day)
             val filter = buildFilters(DateFilter.YearMonthDay(date))
+
+            if (date.isEqual(LocalDate.now())) {
+                e { "Target $date is in the future, I'm no psychic, cancelling" }
+                return@flow
+            }
 
             e { "Starting day $date" }
 
@@ -110,6 +134,8 @@ class LibraryRepository(
                 val pages = client.searchMediaItems(filter).iteratePages()
                 var pageI = 1
                 for (page in pages) {
+                    coroutineContext.ensureActive()
+
                     val items = page.values.toModels()
                     e { "Found ${items.size} items for page#$pageI" }
                     allItems.addAll(items)

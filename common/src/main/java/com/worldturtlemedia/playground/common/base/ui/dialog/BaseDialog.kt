@@ -17,6 +17,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.LifecycleOwner
 import androidx.viewbinding.ViewBinding
+import com.github.ajalt.timberkt.e
 import com.worldturtlemedia.playground.common.R
 import com.worldturtlemedia.playground.common.ktx.simpleName
 
@@ -28,6 +29,8 @@ abstract class BaseDialog<B : ViewBinding, T>(
 ) : AppCompatDialogFragment() {
 
     abstract val binding: B
+
+    protected open val TAG: String = this::class.java.simpleName
 
     @StyleRes
     open val animationStyleRes: Int? = R.style.AlertDialogPopOutAnimation
@@ -43,8 +46,6 @@ abstract class BaseDialog<B : ViewBinding, T>(
     private var onConfirmListener: OnConfirm<T> = {}
     private var onCancelListener: OnCancel = {}
     private var onDismissListener: OnCancel = {}
-
-    private var shouldTriggerDismissListener: Boolean = true
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -71,10 +72,7 @@ abstract class BaseDialog<B : ViewBinding, T>(
     override fun onDismiss(dialog: DialogInterface) {
         super.onDismiss(dialog)
 
-
-        if (shouldTriggerDismissListener) {
-            onDismissListener()
-        }
+        onDismissListener()
     }
 
     protected open fun setupViews() {}
@@ -91,12 +89,7 @@ abstract class BaseDialog<B : ViewBinding, T>(
 
     fun onDismiss(listener: OnCancel) = apply { onDismissListener = listener }
 
-    fun onDismissOrCancel(listener: OnCancel) = apply {
-        onDismissListener = listener
-        onCancelListener = listener
-    }
-
-    fun show(fragmentManager: FragmentManager) = apply { show(fragmentManager, simpleName) }
+    fun show(fragmentManager: FragmentManager) = apply { show(fragmentManager, TAG) }
 
     fun show(fragment: Fragment) = apply { show(fragment.childFragmentManager) }
 
@@ -104,21 +97,16 @@ abstract class BaseDialog<B : ViewBinding, T>(
 
     protected fun confirm(result: T) {
         onConfirmListener(result)
-        silentClose()
+        close()
     }
 
     fun cancel() {
         onCancelListener()
-        silentClose()
+        close()
     }
 
     fun close() {
         dismiss()
-    }
-
-    private fun silentClose() {
-        shouldTriggerDismissListener = false
-        close()
     }
 }
 

@@ -34,3 +34,9 @@ fun PhotosSharedPref.retrieveTokens() = AccessTokens(
     expiry = accessTokenExpiry.takeIf { it > 0 }?.let { DateTime(it) },
     refreshToken = refreshToken
 )
+
+fun PhotosSharedPref.clearTokens() {
+    accessToken = null
+    refreshToken = null
+    accessTokenExpiry = -1L
+}

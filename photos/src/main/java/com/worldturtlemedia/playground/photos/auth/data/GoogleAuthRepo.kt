@@ -17,6 +17,7 @@ import com.worldturtlemedia.playground.photos.BuildConfig
 import com.worldturtlemedia.playground.photos.auth.data.token.AccessTokenSource
 import com.worldturtlemedia.playground.photos.auth.data.token.AccessTokens
 import com.worldturtlemedia.playground.photos.db.PhotosSharedPref
+import com.worldturtlemedia.playground.photos.db.clearTokens
 import com.worldturtlemedia.playground.photos.db.retrieveTokens
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -34,7 +35,7 @@ internal object GoogleAuthRepoFactory {
 }
 
 class GoogleAuthRepo(
-    context: Context,
+    private val context: Context,
     private val photosSharedPref: PhotosSharedPref,
     private val accessTokenSource: AccessTokenSource
 ) : StateRepository<GoogleAuthState>() {
@@ -46,7 +47,16 @@ class GoogleAuthRepo(
 
     override val debugMode: Boolean = true
 
-    private var clientRef: GoogleSignInClient? = null
+    private val clientRef: GoogleSignInClient by lazy {
+        GoogleSignIn.getClient(context, createSignInOptions())
+    }
+
+//    private var clientRef: GoogleSignInClient? = null
+//        get() = field ?: createClient()
+//
+//    private fun createClient() = GoogleSignIn
+//        .getClient(context, createSignInOptions())
+//        .also { clientRef = it }
 
     /**
      * This is called when created, but using the "injected" application context seems
@@ -67,8 +77,7 @@ class GoogleAuthRepo(
     suspend fun signIn(activityRef: FragmentActivity) {
         if (currentState is GoogleAuthState.Authenticated) return
 
-        val client = GoogleSignIn.getClient(activityRef, createSignInOptions())
-            .also { clientRef = it }
+        val client = clientRef ?: throw IllegalStateException("Unable to create Auth Client")
 
         val newState: GoogleAuthState? = try {
             val signInResultData = activityRef.startForResult(client.signInIntent).data
@@ -97,12 +106,11 @@ class GoogleAuthRepo(
     }
 
     suspend fun signOut() {
-        if (clientRef == null) return
-
         suspendCancellableCoroutine<Unit> { continuation ->
-            clientRef?.signOut()?.addOnCompleteListener { continuation.resume(Unit) }
+            clientRef.signOut().addOnCompleteListener { continuation.resume(Unit) }
         }
 
+        PhotosSharedPref.clearTokens()
         setState(GoogleAuthState.Unauthenticated)
     }
 
@@ -110,7 +118,6 @@ class GoogleAuthRepo(
         val account = GoogleSignIn.getLastSignedInAccount(context)
         val accessTokens = getExistingOrNewToken(account)
 
-        e { "TEST: serverAuthCode: ${account?.serverAuthCode}" }
         e { "TEST: account ${account?.email}" }
         e { "TEST: accessTokenIfValid: ${accessTokens?.accessTokenIfValid}"}
 

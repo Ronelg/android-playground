@@ -37,6 +37,11 @@ abstract class StateViewModel<S : State>(initialState: S) : ViewModel() {
         onChange: (value: Property) -> Unit
     ) = state.observeProperty(owner, property, onChange)
 
+    fun onStateChange(
+        owner: LifecycleOwner,
+        block: (state: S) -> Unit
+    ) = observe(owner, block)
+
     fun <Property> onStateChange(
         owner: LifecycleOwner,
         property: (S) -> Property,
@@ -59,10 +64,10 @@ abstract class StateViewModel<S : State>(initialState: S) : ViewModel() {
         channel.consumeEach { update ->
             update.invoke(currentState)
                 ?.let { newState ->
-                    _state.value = newState
                     if (isDebugMode) {
                         i { "$simpleName: New state: $newState" }
                     }
+                    _state.value = newState
                 }
                 ?: i { "Returned null, not updating state" }
         }
@@ -116,3 +121,20 @@ fun <S : State> StateViewModel<S>.launchIO(
 ) = viewModelScope.launch(Dispatchers.IO, block = block)
 
 typealias Update<S> = suspend S.() -> S?
+
+private fun <VM : StateViewModel<S2>, S1 : State, S2 : State> StateViewModel<S1>.mergeState(
+    viewModel: VM
+) = MediatorLiveData<Pair<S1?, S2?>>().apply {
+    addSource(state) { state1 -> value = state1 to value?.second }
+    addSource(viewModel.state) { state2 -> value = value?.first to state2 }
+}
+
+fun <VM : StateViewModel<S2>, S1 : State, S2 : State> StateViewModel<S1>.observeMergedState(
+    owner: LifecycleOwner,
+    viewModel: VM,
+    onChange: (S1, S2) -> Unit
+) = mergeState(viewModel).observe(owner) { (state1, state2) ->
+    if (state1 != null && state2 != null) {
+        onChange(state1, state2)
+    }
+}

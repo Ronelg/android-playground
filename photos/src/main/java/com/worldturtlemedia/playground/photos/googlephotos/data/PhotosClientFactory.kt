@@ -18,13 +18,9 @@ import com.worldturtlemedia.playground.photos.config.PhotosConfig
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.FlowCollector
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
 import java.io.IOException
-import kotlin.coroutines.coroutineContext
 
 interface PhotosClient {
     suspend fun <T> safeApiCall(
@@ -55,6 +51,12 @@ class PhotosClientFactory(
     private var libraryClient: PhotosLibraryClient? = null
 
     private suspend fun ensureClient(): PhotosLibraryClient? {
+        val authState = googleAuthRepo.state.firstOrNull()
+        if (authState == null || authState is GoogleAuthState.Unauthenticated) {
+            libraryClient = null
+            return null
+        }
+
         return libraryClient
             ?: createPhotosAPIClient(context)?.also { libraryClient = it }
     }
@@ -71,13 +73,13 @@ class PhotosClientFactory(
 
             ApiResult.Success(result)
         } catch (error: CancellationException) {
-            e(error) { "Job was cancelled"}
+            e(error) { "Job was cancelled" }
             throw error
         } catch (error: ApiException) {
             e(error) { "Failed to make API request!" }
             ApiResult.Fail(ApiError.RequestFail)
         } catch (error: Throwable) {
-            e (error) { "API Request failed for unknown reason"}
+            e(error) { "API Request failed for unknown reason" }
             ApiResult.Fail(ApiError.Error(error))
         }
     }

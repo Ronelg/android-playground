@@ -3,17 +3,19 @@ package com.worldturtlemedia.playground.photos.googlephotos.ui.list
 import android.os.Parcelable
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.observe
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.github.ajalt.timberkt.e
 import com.worldturtlemedia.playground.common.base.ui.BaseFragment
 import com.worldturtlemedia.playground.common.base.ui.viewbinding.viewBinding
+import com.worldturtlemedia.playground.common.base.ui.viewmodel.observeMergedState
 import com.worldturtlemedia.playground.common.ktx.*
 import com.worldturtlemedia.playground.photos.R
 import com.worldturtlemedia.playground.photos.auth.data.GoogleAuthState.*
 import com.worldturtlemedia.playground.photos.auth.data.errorOrNull
 import com.worldturtlemedia.playground.photos.auth.ui.PhotosAuthModel
+import com.worldturtlemedia.playground.photos.auth.ui.PhotosAuthState
 import com.worldturtlemedia.playground.photos.databinding.PhotosListFragmentBinding
 import com.worldturtlemedia.playground.photos.databinding.PhotosListFragmentBinding.bind
 import com.worldturtlemedia.playground.photos.googlephotos.ui.Constants.NUMBER_OF_COLUMNS
@@ -65,47 +67,81 @@ class PhotosListFragment : BaseFragment<PhotosListFragmentBinding>(R.layout.phot
             authViewModel.showAuthDialogIfNeeded(this@PhotosListFragment)
         }
 
+        viewError.onRetry = {
+            viewModel.init(args.selectedDate)
+        }
+
         setupRecyclerView()
     }
 
     override fun observeViewModel() {
         authViewModel.init(requireContext())
-        viewModel.setTargetDate(args.selectedDate)
+        authViewModel.onStateChange(owner, ::renderAuthState)
 
-        viewModel.state.observe(owner) { state ->
-            binding.mediaTypeFilter.setSelected(state.mediaFilter)
+        viewModel.init(args.selectedDate)
+        viewModel.onStateChange(owner, ::renderState)
+//        viewModel.observeMergedState(owner, authViewModel) { state, authState ->
+//            renderState(state, authState)
+//        }
+
+        viewModel.onStateChange(owner, { it.groupedItems }) { renderListOnChange(it) }
+    }
+
+    private fun renderState(state: PhotosListState) {
+        e {"Rendering state:\nState: $state"}
+        withBinding {
+            mediaTypeFilter.setSelected(state.mediaFilter)
+
+            viewError.visibleOrGone = state.hasError
+            viewError.setErrorText(state.errorText)
         }
+    }
 
-        viewModel.onStateChange(owner, { it.groupedItems }) { state ->
-            val start = System.currentTimeMillis()
+//    private fun renderState(state: PhotosListState, auth: PhotosAuthState) {
+//        e {"Rendering state:\nAuth: $auth\nState: $state"}
+//        renderAuthState(auth)
+//
+//        withBinding {
+//            mediaTypeFilter.setSelected(state.mediaFilter)
+//
+//            authenticatedGroup.visibleOrGone = !state.hasError && authenticatedGroup.visible
+//            viewError.visibleOrGone = state.hasError && auth.auth is Authenticated
+//            viewError.setErrorText(state.errorText)
+//        }
+//    }
 
-            listAdapter.updateGroupedMediaItems(state.groupedItems) {
-                val duration = (System.currentTimeMillis() - start) / 1000.0
-                e { "Took $duration seconds to render ${state.groupedItems.flatMap { it.second }.size} items" }
+    private fun renderAuthState(state: PhotosAuthState) {
+        e {"Rendering auth state:\nAuthState: $state"}
+        withBinding {
+            viewAuthError.visibleOrGone = state.auth is Error
+            state.auth.errorOrNull?.let { errorMessage ->
+                viewAuthError.binding.txtErrorMessage.text = errorMessage
+            }
 
-                if (!state.finishedInitialLoad) {
-                    val position = listAdapter.getPositionOfTargetDate(state.targetDate)
-                    if (position != null) {
-                        e { "Scrolling to $position" }
-                        binding.recyclerView.stopScroll()
-                        binding.recyclerView.layoutManager?.cast<GridLayoutManager>()
+            viewUnauthenticated.visibleOrGone =
+                !state.isShowingAuthDialog && state.auth is Unauthenticated
+
+            authenticatedGroup.visibleOrGone = state.auth is Authenticated
+        }
+    }
+
+    private fun renderListOnChange(state: PhotosListState) {
+        val start = System.currentTimeMillis()
+
+        listAdapter.updateGroupedMediaItems(state.groupedItems) {
+            val duration = (System.currentTimeMillis() - start) / 1000.0
+            e { "Took $duration seconds to render ${state.groupedItems.flatMap { it.second }.size} items" }
+
+            if (!state.finishedInitialLoad && !state.userHasScrolled) {
+                val position = listAdapter.getPositionOfTargetDate(state.targetDate)
+                if (position != null) {
+                    e { "Scrolling to $position" }
+                    with(binding.recyclerView) {
+                        stopScroll()
+                        layoutManager?.cast<GridLayoutManager>()
                             ?.scrollToPositionWithOffset(position, 0)
                     }
                 }
-            }
-        }
-
-        authViewModel.observe(owner) { state ->
-            withBinding {
-                viewAuthError.visibleOrGone = state.auth is Error
-                state.auth.errorOrNull?.let { errorMessage ->
-                    viewAuthError.binding.txtErrorMessage.text = errorMessage
-                }
-
-                viewUnauthenticated.visibleOrGone =
-                    !state.isShowingAuthDialog && state.auth is Unauthenticated
-
-                authenticatedGroup.visibleOrGone = state.auth is Authenticated
             }
         }
     }
@@ -113,6 +149,16 @@ class PhotosListFragment : BaseFragment<PhotosListFragmentBinding>(R.layout.phot
     private fun setupRecyclerView() = with(binding.recyclerView) {
         layoutManager = createLayoutManager()
         adapter = listAdapter
+
+        this.addOnScrollListener(object: RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+
+                if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
+                    viewModel.setUserScrolled()
+                }
+            }
+        })
     }
 
     private fun createLayoutManager() =

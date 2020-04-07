@@ -17,7 +17,6 @@ suspend fun <B : ViewBinding, T> Fragment.showDialogForResult(
     dialog
         .onConfirm { continuation.resume(DialogResult.Confirmed(it)) }
         .onCancel { continuation.resume(DialogResult.Cancelled) }
-        .onDismiss { continuation.resume(DialogResult.Cancelled) }
         .show(this)
 }
 
