@@ -27,18 +27,15 @@ class PhotosListModel : StateViewModel<PhotosListState>(PhotosListState()) {
 
     private val authRepo = GoogleAuthRepoFactory.instance
 
-    private val libraryRepo = LibraryRepository.memoryInstance
+    private val libraryRepo = LibraryRepository.dbInstance
 
     private var firstLoadJob: Job? = null
 
     init {
         viewModelScope.launch {
             authRepo.state.collect { state ->
-                firstLoadJob?.let { job ->
-                    if (state is GoogleAuthState.Unauthenticated) {
-                        e { "Cancelling" }
-                        job.cancelChildren()
-                    }
+                if (state is GoogleAuthState.Unauthenticated) {
+                    firstLoadJob?.cancelChildren()
                 }
             }
         }
@@ -51,7 +48,6 @@ class PhotosListModel : StateViewModel<PhotosListState>(PhotosListState()) {
 
         firstLoadJob?.cancelChildren()
         firstLoadJob = viewModelScope.launch(Dispatchers.IO) {
-            e { "Inside firstLoadJob.launch: active -> $isActive" }
             authRepo.state.collect { state ->
                 if (state !is GoogleAuthState.Authenticated) return@collect
 
@@ -66,16 +62,14 @@ class PhotosListModel : StateViewModel<PhotosListState>(PhotosListState()) {
 
                         setState {
                             copy(
-                                items = items.merge(newItems),
+                                items = items.merge(newItems).distinct(),
                                 status = result
                             )
                         }
                     }
 
                 e { "Finished loading initial media" }
-                setState {
-                    copy(finishedInitialLoad = true)
-                }
+                setState { copy(finishedInitialLoad = true) }
 
                 firstLoadJob?.cancel()
             }

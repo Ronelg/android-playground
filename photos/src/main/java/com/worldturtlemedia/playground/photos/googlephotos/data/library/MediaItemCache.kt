@@ -1,7 +1,10 @@
 package com.worldturtlemedia.playground.photos.googlephotos.data.library
 
+import com.worldturtlemedia.playground.common.ktx.isEqualOrAfter
+import com.worldturtlemedia.playground.common.ktx.isEqualOrBefore
 import com.worldturtlemedia.playground.common.ktx.minutes
 import com.worldturtlemedia.playground.photos.googlephotos.model.mediaitem.MediaItem
+import org.joda.time.LocalDate
 
 interface MediaItemCache {
 
@@ -20,6 +23,21 @@ interface MediaItemCache {
     suspend fun hasItems(): Boolean = getAllItems().isNotEmpty()
 
     suspend fun getAllItems(): List<MediaItem>
+
+    suspend fun getByDate(date: LocalDate) = getAllItems().filter { mediaItem ->
+        mediaItem.creationTime.toLocalDate() == date
+    }
+
+    suspend fun getAllWithin(start: LocalDate, end: LocalDate): List<MediaItem> {
+        if (end.isBefore(start)) {
+            throw IllegalArgumentException("Start: $start, has to be before End: $end")
+        }
+
+        return getAllItems().filter { mediaItem ->
+            val date = mediaItem.creationTime.toLocalDate()
+            date.isEqualOrAfter(start) && date.isEqualOrBefore(end)
+        }
+    }
 
     suspend fun storeItems(items: List<MediaItem>)
 

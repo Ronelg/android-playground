@@ -18,7 +18,10 @@ android {
 
         javaCompileOptions {
             annotationProcessorOptions {
-                arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
+                arguments = [
+                        "room.schemaLocation": "$projectDir/schemas".toString(),
+                        "room.incremental"   : "true"
+                ]
             }
         }
     }
@@ -84,7 +87,7 @@ dependencies {
     kapt(Libs.moshi_kotlin_codegen)
 
     implementation(Libs.firebase_config_ktx) {
-        exclude group: 'com.google.protobuf', module:'protobuf-lite'
+        exclude group: 'com.google.protobuf', module: 'protobuf-lite'
     }
     implementation(Libs.firebase_analytics)
     implementation(Libs.firebase_functions_ktx)

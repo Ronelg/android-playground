@@ -19,6 +19,7 @@ class MemoryMediaItemCache : MediaItemCache {
         return cache.entries
             .filter { (_, timestamp) -> isValid(timestamp) }
             .map { (item, _) -> item }
+            .sortedBy { it.creationTime }
     }
 
     override suspend fun storeItems(items: List<MediaItem>) {

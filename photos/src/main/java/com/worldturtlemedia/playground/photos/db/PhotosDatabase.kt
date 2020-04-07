@@ -31,7 +31,7 @@ abstract class PhotosDatabase : RoomDatabase() {
 
     companion object Factory {
 
-        const val DB_VERSION = 1
+        const val DB_VERSION = 2
         const val DB_NAME = "photos_database"
 
         @Volatile
@@ -43,10 +43,9 @@ abstract class PhotosDatabase : RoomDatabase() {
             instance ?: create(context).also { instance = it }
         }
 
-        private fun create(context: Context): PhotosDatabase = Room.databaseBuilder(
-            context,
-            PhotosDatabase::class.java,
-            DB_NAME
-        ).build()
+        private fun create(context: Context): PhotosDatabase =
+            Room.databaseBuilder(context, PhotosDatabase::class.java, DB_NAME)
+                .fallbackToDestructiveMigration()
+                .build()
     }
 }

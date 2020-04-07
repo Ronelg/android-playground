@@ -1,6 +1,7 @@
 package com.worldturtlemedia.playground.photos.googlephotos.data.library
 
 import com.github.ajalt.timberkt.e
+import com.worldturtlemedia.playground.common.ktx.merge
 import com.worldturtlemedia.playground.photos.googlephotos.data.ApiResult
 import com.worldturtlemedia.playground.photos.googlephotos.data.PhotosClient
 import com.worldturtlemedia.playground.photos.googlephotos.data.PhotosClientFactory
@@ -31,30 +32,38 @@ class LibraryRepository(
     }
 
     suspend fun fetchMediaForDate(
-        targetDate: LocalDate
+        targetDate: LocalDate,
+        force: Boolean = false
     ) = flow<ApiResult<List<MediaItem>>> {
         e { "Fetching for $targetDate" }
-        val filter = buildFilters(DateFilter.YearMonthDay(targetDate))
 
         val start = System.currentTimeMillis()
-        safeApiCall { client ->
-            val response = client.searchMediaItems(filter).iteratePages()
-            e { "Got response in ${(System.currentTimeMillis() - start) / 1000.0}s" }
+        val cached = mediaItemCache.getByDate(targetDate)
 
-            response.mapIndexedNotNull { index, page ->
-                val items = page.values.toModels()
-                e { "Got ${items.size} from page ${index + 1}" }
-                emitSuccess(items)
+        if (!force && cached.isNotEmpty()) {
+            e {"Retrieved ${cached.size} from cache"}
+            emitSuccess(cached)
+        } else {
+            val filter = buildFilters(DateFilter.YearMonthDay(targetDate))
+            safeApiCall { client ->
+                val response = client.searchMediaItems(filter).iteratePages()
+                e { "Got response in ${(System.currentTimeMillis() - start) / 1000.0}s" }
+
+                response.mapIndexedNotNull { index, page ->
+                    val items = page.values.toModels()
+                    e { "Got ${items.size} from page ${index + 1}" }
+                    emitSuccess(items)
+                    mediaItemCache.storeItems(items)
+                }
             }
         }
 
         e { "Got all items in ${(System.currentTimeMillis() - start) / 1000.0}s" }
 
         val flow1 = fetchItemsBefore(targetDate)
-        val flow2 = fetchItemsAfter(targetDate)
-        val t = flowOf(flow1, flow2).flattenMerge()
+//        val flow2 = fetchItemsAfter(targetDate)
+        val t = flowOf(flow1/*, flow2*/).flattenMerge()
         emitAll(t)
-//        emitAll(fetchItemsBefore(targetDate))
     }.flowOn(Dispatchers.IO)
 
     suspend fun fetchItemsBefore(
@@ -65,19 +74,26 @@ class LibraryRepository(
         callCount: Int = 0,
         previousItemCount: Int = 0
     ): Flow<ApiResult<List<MediaItem>>> = flow {
-        e { "Starting before fetch! Call #${callCount + 1} with $previousItemCount existing items" }
         val rangeStart = targetDate.minusMonths(monthsBefore)
         val rangeEnd = targetDate.minusDays(1)
-        val filter = buildFilters(DateFilter.range(rangeStart, rangeEnd))
 
+        val cached = mediaItemCache.getAllWithin(rangeStart, rangeEnd)
+        emit(ApiResult.Success(cached))
+        if (cached.size >= minimumItems) {
+            return@flow
+        }
+
+        e { "Starting before fetch! Call #${callCount + 1} with $previousItemCount existing items" }
+        val filter = buildFilters(DateFilter.range(rangeStart, rangeEnd))
         val result = safeApiCall { client ->
             val pages = client.searchMediaItems(filter).iteratePages()
-            val allItems = mutableListOf<MediaItem>()
+            val allItems = cached.toMutableList()
             for (page in pages) {
                 coroutineContext.ensureActive()
 
                 val items = page.values.toModels()
                 allItems.addAll(items)
+                mediaItemCache.storeItems(items)
                 emit(ApiResult.Success(items))
 
                 if ((previousItemCount + allItems.size) >= minimumItems) {

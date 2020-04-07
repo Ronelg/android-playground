@@ -9,3 +9,7 @@ fun createInterval(start: DateTime, end: DateTime) = Interval(start, end)
 fun createInterval(start: LocalDate, end: LocalDate): Interval {
     return createInterval(start.toDateTimeAtStartOfDay(), end.toDateTimeAtStartOfDay())
 }
+
+fun LocalDate.isEqualOrBefore(date: LocalDate) = isEqual(date) || isBefore(date)
+
+fun LocalDate.isEqualOrAfter(date: LocalDate) = isEqual(date) || isAfter(date)

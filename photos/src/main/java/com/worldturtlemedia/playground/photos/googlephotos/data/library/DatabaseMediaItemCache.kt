@@ -24,7 +24,7 @@ class DatabaseMediaItemCache(
         val items = getAllMediaItemEntities()
         deleteExpired(items.expired)
 
-        return items.valid.toModels()
+        return items.valid.toModels().sortedBy { it.creationTime }
     }
 
     override suspend fun storeItems(items: List<MediaItem>) {
