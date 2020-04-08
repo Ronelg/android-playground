@@ -35,6 +35,9 @@ fun <E> List<E>.replaceAt(index: Int, newElement: E): List<E> =
 @CheckResult
 fun <E> List<E>.merge(list: List<E>): List<E> = toMutableList().apply { addAll(list) }.toList()
 
+@CheckResult
+fun <E> List<E>.mergeDistinct(list: List<E>): List<E> = merge(list).distinct()
+
 /**
  * Create a mutable copy of the [List], which can then be mutated using [block].
  *

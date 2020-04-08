@@ -6,6 +6,7 @@ import com.worldturtlemedia.playground.common.ktx.mediatorLiveDataOf
 import com.worldturtlemedia.playground.common.ktx.observeProperty
 import com.worldturtlemedia.playground.common.ktx.simpleName
 import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.actor
 import kotlinx.coroutines.channels.consumeEach
 
@@ -60,12 +61,12 @@ abstract class StateViewModel<S : State>(initialState: S) : ViewModel() {
     @OptIn(
         ObsoleteCoroutinesApi::class, ExperimentalCoroutinesApi::class
     )
-    private val updateStateActor = viewModelScope.actor<Update<S>> {
+    private val updateStateActor = viewModelScope.actor<Update<S>>(capacity = Channel.UNLIMITED) {
         channel.consumeEach { update ->
             update.invoke(currentState)
                 ?.let { newState ->
                     if (isDebugMode) {
-                        i { "$simpleName: New state: $newState" }
+                        i { "${this@StateViewModel.simpleName}: New state: $newState" }
                     }
                     _state.value = newState
                 }

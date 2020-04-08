@@ -4,24 +4,22 @@ import androidx.lifecycle.viewModelScope
 import com.github.ajalt.timberkt.e
 import com.worldturtlemedia.playground.common.base.ui.viewmodel.State
 import com.worldturtlemedia.playground.common.base.ui.viewmodel.StateViewModel
+import com.worldturtlemedia.playground.common.base.ui.viewmodel.launchIO
 import com.worldturtlemedia.playground.common.ktx.cast
 import com.worldturtlemedia.playground.common.ktx.ensureKey
-import com.worldturtlemedia.playground.common.ktx.merge
+import com.worldturtlemedia.playground.common.ktx.mergeDistinct
 import com.worldturtlemedia.playground.common.ktx.safeCollect
 import com.worldturtlemedia.playground.photos.auth.data.GoogleAuthRepoFactory
 import com.worldturtlemedia.playground.photos.auth.data.GoogleAuthState
-import com.worldturtlemedia.playground.photos.googlephotos.data.ApiError
-import com.worldturtlemedia.playground.photos.googlephotos.data.ApiResult
-import com.worldturtlemedia.playground.photos.googlephotos.data.asApiError
+import com.worldturtlemedia.playground.photos.googlephotos.data.*
 import com.worldturtlemedia.playground.photos.googlephotos.data.library.LibraryRepository
-import com.worldturtlemedia.playground.photos.googlephotos.data.dataOrNull
 import com.worldturtlemedia.playground.photos.googlephotos.model.filter.MediaFilter
 import com.worldturtlemedia.playground.photos.googlephotos.model.mediaitem.MediaItem
+import com.worldturtlemedia.playground.photos.googlephotos.model.mediaitem.createdDate
 import com.worldturtlemedia.playground.photos.googlephotos.model.mediaitem.isPhoto
 import com.worldturtlemedia.playground.photos.googlephotos.model.mediaitem.isVideo
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.*
 import org.joda.time.LocalDate
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -34,6 +32,8 @@ class PhotosListModel : StateViewModel<PhotosListState>(PhotosListState()) {
     private val libraryRepo = LibraryRepository.dbInstance
 
     private var firstLoadJob: Job? = null
+    private var loadAfterJob: Job? = null
+    private var loadBeforeJob: Job? = null
 
     init {
         viewModelScope.launch {
@@ -46,44 +46,47 @@ class PhotosListModel : StateViewModel<PhotosListState>(PhotosListState()) {
     }
 
     fun init(date: LocalDate) {
-        if (currentState.initialized && currentState.status !is ApiResult.Fail) return
+        if (currentState.initialized && currentState.initialLoadStatus !is ApiResult.Fail) return
 
         setState { copy(initialized = true, targetDate = date) }
 
         firstLoadJob?.cancelChildren()
-        firstLoadJob = viewModelScope.launch(Dispatchers.IO) {
-            authRepo.state.collect { state ->
-                if (state !is GoogleAuthState.Authenticated) return@collect
+        firstLoadJob = launchIO {
+            authRepo.state
+                .onCompletion {
+                    e { "Finished loading initial media" }
+                    setState { copy(finishedInitialLoad = true) }
+                }
+                .collect { state ->
+                    if (state !is GoogleAuthState.Authenticated) return@collect
 
-                // TESTING
-                libraryRepo.fetchMediaForDate(date)
-                    .catch { exception ->
-                        if (exception is CancellationException) return@catch
-                        setState { copy(status = exception.asApiError()) }
-                    }
-                    .safeCollect { result ->
-                        val newItems = result.dataOrNull() ?: emptyList()
+                    // TESTING
+                    e { "Loading initial for $date" }
+                    libraryRepo.fetchMediaForDate(date)
+                        .catch { exception ->
+                            if (exception is CancellationException) return@catch
+                            setState { copy(initialLoadStatus = exception.asApiError()) }
+                        }
+                        .safeCollect { result ->
+                            val newItems = result.dataOrNull() ?: emptyList()
 
-                        if (result is ApiResult.Fail) {
-                            if (result.error is ApiError.Unauthenticated) {
-                                e {"We are not authenticated..."}
-                                authRepo.signOut()
+                            if (result is ApiResult.Fail) {
+                                if (result.error is ApiError.Unauthenticated) {
+                                    e { "We are not authenticated..." }
+                                    authRepo.signOut()
+                                }
+                            }
+
+                            setState {
+                                copy(
+                                    items = items.mergeNewResults(newItems),
+                                    initialLoadStatus = result
+                                )
                             }
                         }
 
-                        setState {
-                            copy(
-                                items = items.merge(newItems).distinct(),
-                                status = result
-                            )
-                        }
-                    }
-
-                e { "Finished loading initial media" }
-                setState { copy(finishedInitialLoad = true) }
-
-                firstLoadJob?.cancel()
-            }
+                    firstLoadJob?.cancel()
+                }
         }
     }
 
@@ -95,6 +98,49 @@ class PhotosListModel : StateViewModel<PhotosListState>(PhotosListState()) {
         if (userHasScrolled) null
         else copy(userHasScrolled = true)
     }
+
+    fun loadMoreAfter() {
+        if (loadAfterJob != null && loadAfterJob?.isActive == true) return
+
+        val firstDate = currentState.items.firstOrNull()?.createdDate ?: return
+        launchIO {
+            e { "Loading MORE AFTER $firstDate" }
+            libraryRepo.fetchItemsAfter(firstDate)
+                .handleResult { isLoading -> copy(loadingAfter = isLoading) }
+
+            e { "Done loading AFTER" }
+            loadAfterJob = null
+        }
+    }
+
+    fun loadMoreBefore() {
+        if (loadBeforeJob != null && loadBeforeJob?.isActive == true) return
+
+        val lastDate = currentState.items.lastOrNull()?.createdDate ?: return
+        launchIO {
+            e { "Loading MORE BEFORE $lastDate" }
+            libraryRepo.fetchItemsBefore(lastDate)
+                .handleResult { isLoading -> copy(loadingBefore = isLoading) }
+
+            e { "Done loading BEFORE" }
+            loadBeforeJob = null
+        }
+    }
+
+    // TODO: Have some type of error handling on here to inform the user we can't load more
+    private suspend fun Flow<ApiResult<List<MediaItem>>>.handleResult(
+        updateLoading: PhotosListState.(Boolean) -> PhotosListState
+    ) = onStart { setState { updateLoading(this, true) } }
+        .onCompletion { setState { updateLoading(this, false) } }
+        .mapNotNull { result -> result.dataOrNull() }
+        .safeCollect { newItems ->
+            setState {
+                copy(items = items.mergeNewResults(newItems))
+            }
+        }
+
+    private fun List<MediaItem>.mergeNewResults(list: List<MediaItem>) =
+        mergeDistinct(list).sortedByDescending { item -> item.creationTime }
 }
 
 data class PhotosListState(
@@ -103,16 +149,21 @@ data class PhotosListState(
     val mediaFilter: MediaFilter = MediaFilter.All,
     val items: List<MediaItem> = emptyList(),
     val finishedInitialLoad: Boolean = false,
-    val status: ApiResult<List<MediaItem>>? = null,
-    val userHasScrolled: Boolean = false
+    val initialLoadStatus: ApiResult<List<MediaItem>>? = null,
+    val userHasScrolled: Boolean = false,
+    val loadingBefore: Boolean = false,
+    val loadingAfter: Boolean = false
 ) : State {
 
     val hasError: Boolean
-        get() = status is ApiResult.Fail
+        get() = initialLoadStatus is ApiResult.Fail
 
     val errorText: String?
-        get() = status?.cast<ApiResult.Fail>()?.error?.message
+        get() = initialLoadStatus?.cast<ApiResult.Fail>()?.error?.message
 
+    // TODO: The filtering on a large list causes it to be verrrrrrry slow
+    // TODO: Need to look into truncating the list at a certain size.
+    // TODO: Since we cache on the backend, it shouldn't be a problem
     val groupedItems: List<Pair<LocalDate, List<MediaItem>>>
         get() = items
             .filter { item ->
@@ -129,7 +180,7 @@ data class PhotosListState(
 
     override fun toString(): String {
         val statustext =
-            if (status is ApiResult.Success) "Success(items=${status.data.size})" else status.toString()
+            if (initialLoadStatus is ApiResult.Success) "Success(items=${initialLoadStatus.data.size})" else initialLoadStatus.toString()
         return "PhotoListState(init=$initialized,targetDate=$targetDate,finishedInitialLoad=$finishedInitialLoad,userHasScrolled=$userHasScrolled,status=$statustext"
     }
 }

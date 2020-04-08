@@ -118,9 +118,6 @@ class GoogleAuthRepo(
         val account = GoogleSignIn.getLastSignedInAccount(context)
         val accessTokens = getExistingOrNewToken(account)
 
-        e { "TEST: account ${account?.email}" }
-        e { "TEST: accessTokenIfValid: ${accessTokens?.accessTokenIfValid}"}
-
         return GoogleAuthState.from(account, accessTokens?.accessTokenIfValid)
     }
 

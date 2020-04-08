@@ -5,7 +5,6 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.github.ajalt.timberkt.e
 import com.worldturtlemedia.playground.common.base.ui.BaseFragment
 import com.worldturtlemedia.playground.common.base.ui.viewbinding.viewBinding
@@ -20,6 +19,7 @@ import com.worldturtlemedia.playground.photos.databinding.PhotosListFragmentBind
 import com.worldturtlemedia.playground.photos.googlephotos.ui.Constants.NUMBER_OF_COLUMNS
 import com.worldturtlemedia.playground.photos.googlephotos.ui.list.items.MediaItemListAdapter
 import com.worldturtlemedia.playground.photos.googlephotos.ui.list.items.MediaItemListItem
+import com.worldturtlemedia.playground.photos.googlephotos.ui.util.BidirectionalInfiniteScrollListener
 import kotlinx.android.parcel.Parcelize
 import org.joda.time.LocalDate
 
@@ -46,6 +46,19 @@ class PhotosListFragment : BaseFragment<PhotosListFragmentBinding>(R.layout.phot
     private val args by lazy { navArgs.args ?: PhotoListArgs.default }
 
     private val listAdapter = MediaItemListAdapter()
+
+    private val listLayoutManager by lazy {
+        createGridLayoutManager(requireContext(), NUMBER_OF_COLUMNS) {
+            buildSpanSizeLookup { position ->
+                val item = listAdapter.getItem(position)
+                if (item is MediaItemListItem) 1 else NUMBER_OF_COLUMNS
+            }
+        }
+    }
+
+    private val listInfiniteScrollListener by lazy {
+        BidirectionalInfiniteScrollListener(listLayoutManager)
+    }
 
     override fun setupViews() = withBinding {
         toolbar.onFilterClicked = {
@@ -83,7 +96,13 @@ class PhotosListFragment : BaseFragment<PhotosListFragmentBinding>(R.layout.phot
     }
 
     private fun renderState(state: PhotosListState) {
-        e { "Rendering state:\nState: $state" }
+        e {"rendering state: $state"}
+        with(listInfiniteScrollListener) {
+            canLoadAny = state.finishedInitialLoad && state.userHasScrolled
+            isLoadingTop = state.loadingAfter
+            isLoadingBottom = state.loadingBefore
+        }
+
         withBinding {
             mediaTypeFilter.setSelected(state.mediaFilter)
 
@@ -93,7 +112,6 @@ class PhotosListFragment : BaseFragment<PhotosListFragmentBinding>(R.layout.phot
     }
 
     private fun renderAuthState(state: PhotosAuthState) {
-        e { "Rendering auth state:\nAuthState: $state" }
         withBinding {
             viewAuthError.visibleOrGone = state.auth is Error
             state.auth.errorOrNull?.let { errorMessage ->
@@ -108,12 +126,7 @@ class PhotosListFragment : BaseFragment<PhotosListFragmentBinding>(R.layout.phot
     }
 
     private fun renderListOnChange(state: PhotosListState) {
-        val start = System.currentTimeMillis()
-
         listAdapter.updateGroupedMediaItems(state.groupedItems) {
-            val duration = (System.currentTimeMillis() - start) / 1000.0
-            e { "Took $duration seconds to render ${state.groupedItems.flatMap { it.second }.size} items" }
-
             if (!state.finishedInitialLoad && !state.userHasScrolled) {
                 scrollToCurrentDay(state.targetDate)
             }
@@ -121,27 +134,17 @@ class PhotosListFragment : BaseFragment<PhotosListFragmentBinding>(R.layout.phot
     }
 
     private fun setupRecyclerView() = with(binding.recyclerView) {
-        layoutManager = createLayoutManager()
+        layoutManager = listLayoutManager
         adapter = listAdapter
 
-        this.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                super.onScrollStateChanged(recyclerView, newState)
-
-                if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
-                    viewModel.setUserScrolled()
-                }
-            }
-        })
-    }
-
-    private fun createLayoutManager() =
-        createGridLayoutManager(requireContext(), NUMBER_OF_COLUMNS) {
-            buildSpanSizeLookup { position ->
-                val item = listAdapter.getItem(position)
-                if (item is MediaItemListItem) 1 else NUMBER_OF_COLUMNS
-            }
+        with(listInfiniteScrollListener) {
+            onLoadMoreTop { viewModel.loadMoreAfter() }
+            onLoadMoreBottom { viewModel.loadMoreBefore() }
+            addOnScrollListener(this)
         }
+
+        addOnScrollStateDragging { viewModel.setUserScrolled() }
+    }
 
     private fun scrollToCurrentDay(targetDate: LocalDate) {
         val position = listAdapter.getPositionOfTargetDate(targetDate) ?: return

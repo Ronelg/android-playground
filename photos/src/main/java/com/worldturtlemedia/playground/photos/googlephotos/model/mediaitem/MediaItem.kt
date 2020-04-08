@@ -2,6 +2,7 @@ package com.worldturtlemedia.playground.photos.googlephotos.model.mediaitem
 
 import com.worldturtlemedia.playground.photos.googlephotos.model.createMediaThumbnailUrl
 import org.joda.time.DateTime
+import org.joda.time.LocalDate
 
 sealed class MediaItem {
     abstract val id: String
@@ -14,6 +15,9 @@ sealed class MediaItem {
 
     fun thumbnailUrl(): String = createMediaThumbnailUrl(baseUrl)
 }
+
+val MediaItem.createdDate: LocalDate
+    get() = creationTime.toLocalDate()
 
 data class VideoItem(
     override val id: String,

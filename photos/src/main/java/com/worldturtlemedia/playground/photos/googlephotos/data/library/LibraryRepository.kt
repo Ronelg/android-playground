@@ -41,17 +41,14 @@ class LibraryRepository(
         val cached = mediaItemCache.getByDate(targetDate)
 
         if (!force && cached.isNotEmpty()) {
-            e { "Retrieved ${cached.size} from cache" }
             emitSuccess(cached)
         } else {
             val filter = buildFilters(DateFilter.YearMonthDay(targetDate))
             safeApiCall { client ->
                 val response = client.searchMediaItems(filter).iteratePages()
-                e { "Got response in ${(System.currentTimeMillis() - start) / 1000.0}s" }
 
-                response.mapIndexedNotNull { index, page ->
+                response.mapNotNull { page ->
                     val items = page.values.toModels()
-                    e { "Got ${items.size} from page ${index + 1}" }
                     emitSuccess(items)
                     mediaItemCache.storeItems(items)
                 }
@@ -137,15 +134,16 @@ class LibraryRepository(
     ): Flow<ApiResult<List<MediaItem>>> = flow {
         e { "Starting after fetch!" }
 
-        val daysUntilToday = Days.daysBetween(targetDate, LocalDate.now()).days
+        val rangeStart = targetDate.plusDays(1)
+        val daysUntilToday = Days.daysBetween(rangeStart, LocalDate.now()).days
         val daysToFetch = if (daysUntilToday < daysAfter) daysUntilToday else daysAfter
-        e { "Looking $daysToFetch days ahead of $targetDate" }
 
-        val cached = mediaItemCache.getAllWithin(targetDate, targetDate.plusDays(daysToFetch))
+        val cached = mediaItemCache.getAllWithin(rangeStart, rangeStart.plusDays(daysToFetch))
         emit(ApiResult.Success(cached))
-        if (cached.size >= minimumItems) {
-            return@flow
-        }
+
+        if (cached.size >= minimumItems) return@flow
+
+        e { "Starting after fetch! Call #${callCount + 1} with $previousItemCount existing items" }
 
         val allItems = cached.toMutableList()
         for (day in 1 until daysToFetch) {
@@ -190,14 +188,14 @@ class LibraryRepository(
             e { "Met the minimum size! ${allItems.size} with ${callCount + 1} calls" }
         } else {
             e { "Did not meet minimum items! Attempting to recurse..." }
-            val newTargetDate = targetDate.plusDays(daysToFetch)
+            val newTargetDate = rangeStart.plusDays(daysToFetch)
             if (newTargetDate.isAfter(LocalDate.now())) {
                 e { "No more days to look at!" }
                 return@flow
             }
 
             fetchItemsAfter(
-                targetDate = targetDate.plusDays(daysToFetch),
+                targetDate = newTargetDate,
                 minimumItems = minimumItems,
                 daysAfter = daysAfter,
                 maxCalls = maxCalls,
@@ -206,38 +204,4 @@ class LibraryRepository(
             ).let { emitAll(it) }
         }
     }
-
-    suspend fun fetchItems(
-        targetDate: LocalDate,
-        daysBefore: Int = 5,
-        daysAfter: Int = 5
-    ) = flow<ApiResult<List<MediaItem>>> {
-        val rangeStart = targetDate.minusDays(daysBefore)
-        val rangeEnd =
-            if (targetDate.isEqual(LocalDate.now())) targetDate
-            else targetDate.plusDays(daysAfter)
-
-        val filters = buildFilters(DateFilter.range(rangeStart, rangeEnd))
-
-        safeApiCall { client ->
-            val pages = client.searchMediaItems(filters).iteratePages()
-            var pageCount = 1
-            var itemCount = 0
-            for (page in pages) {
-                if (!coroutineContext.isActive) return@safeApiCall
-
-                val items = page.values.toModels()
-
-                pageCount++
-                itemCount += items.size
-
-                e { "Loaded page#$pageCount with ${items.size} items" }
-
-                emit(ApiResult.Success(items))
-
-            }
-
-            e { "Finished with $pageCount pages and $itemCount items" }
-        }
-    }.flowOn(Dispatchers.IO)
 }

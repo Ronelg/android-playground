@@ -1,5 +1,11 @@
 package com.worldturtlemedia.playground.photos.googlephotos.data
 
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.FlowCollector
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.transform
+
 sealed class ApiResult<out T> {
     data class Fail(val error: ApiError) : ApiResult<Nothing>()
     object Loading : ApiResult<Nothing>()
@@ -25,3 +31,5 @@ sealed class ApiError(val message: String) {
 fun Throwable.asApiError() = ApiResult.Fail(ApiError.Error(this))
 
 fun <T> ApiResult<T>.dataOrNull(): T? = (this as? ApiResult.Success)?.data
+
+fun <T> ApiResult<T>.errorOrNull(): ApiError? = (this as? ApiResult.Fail)?.error
