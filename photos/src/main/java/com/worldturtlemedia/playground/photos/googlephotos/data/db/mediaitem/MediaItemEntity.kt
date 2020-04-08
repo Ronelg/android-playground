@@ -23,8 +23,13 @@ fun MediaItem.toEntity() = when (this) {
 fun List<MediaItem>.toEntities() = map { it.toEntity() }
 
 fun List<MediaItemEntity>.splitByEntityType(): Pair<List<VideoItemEntity>, List<PhotoItemEntity>> {
-    val videos = filterIsInstance<VideoItemEntity>()
-    val photos = filterIsInstance<PhotoItemEntity>()
+    val videos = mutableListOf<VideoItemEntity>()
+    val photos = mutableListOf<PhotoItemEntity>()
+
+    for (item in this) when(item) {
+        is VideoItemEntity -> videos.add(item)
+        is PhotoItemEntity -> photos.add(item)
+    }
 
     return videos to photos
 }
