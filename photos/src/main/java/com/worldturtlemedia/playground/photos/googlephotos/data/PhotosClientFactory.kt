@@ -5,6 +5,7 @@ import com.github.ajalt.timberkt.e
 import com.github.ajalt.timberkt.i
 import com.google.api.gax.core.FixedCredentialsProvider
 import com.google.api.gax.rpc.ApiException
+import com.google.api.gax.rpc.UnauthenticatedException
 import com.google.auth.oauth2.UserCredentials
 import com.google.photos.library.v1.PhotosLibraryClient
 import com.google.photos.library.v1.PhotosLibrarySettings
@@ -75,6 +76,9 @@ class PhotosClientFactory(
         } catch (error: CancellationException) {
             e(error) { "Job was cancelled" }
             throw error
+        } catch (error: UnauthenticatedException) {
+            e(error) { "Unauthenticated!" }
+            ApiResult.Fail(ApiError.Unauthenticated)
         } catch (error: ApiException) {
             e(error) { "Failed to make API request!" }
             ApiResult.Fail(ApiError.RequestFail)

@@ -26,7 +26,7 @@ fun List<MediaItemEntity>.splitByEntityType(): Pair<List<VideoItemEntity>, List<
     val videos = mutableListOf<VideoItemEntity>()
     val photos = mutableListOf<PhotoItemEntity>()
 
-    for (item in this) when(item) {
+    for (item in this) when (item) {
         is VideoItemEntity -> videos.add(item)
         is PhotoItemEntity -> photos.add(item)
     }

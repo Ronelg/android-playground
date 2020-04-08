@@ -15,6 +15,7 @@ sealed class ApiResult<out T> {
 sealed class ApiError(val message: String) {
     object RequestFail : ApiError("Failed to complete the request")
     object ClientFailure : ApiError("Failed to create the photos Client")
+    object Unauthenticated : ApiError("Unauthenticated")
     data class Error(val error: Throwable) : ApiError(error.message ?: "Unknown error") {
 
         override fun toString(): String = "Error occurred: ${error.localizedMessage}"

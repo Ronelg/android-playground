@@ -21,10 +21,10 @@ class DatabaseMediaItemCache(
     }
 
     override suspend fun getAllItems(): List<MediaItem> {
-        val items = getAllMediaItemEntities()
-        deleteExpired(items.expired)
+        val (valid, expired) = getAllMediaItemEntities()
+        deleteExpired(expired)
 
-        return items.valid.toModels().sortedBy { it.creationTime }
+        return valid.toModels().sortedBy { it.creationTime }
     }
 
     override suspend fun storeItems(items: List<MediaItem>) {

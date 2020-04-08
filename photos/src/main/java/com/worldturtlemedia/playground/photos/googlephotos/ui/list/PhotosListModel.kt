@@ -10,6 +10,7 @@ import com.worldturtlemedia.playground.common.ktx.merge
 import com.worldturtlemedia.playground.common.ktx.safeCollect
 import com.worldturtlemedia.playground.photos.auth.data.GoogleAuthRepoFactory
 import com.worldturtlemedia.playground.photos.auth.data.GoogleAuthState
+import com.worldturtlemedia.playground.photos.googlephotos.data.ApiError
 import com.worldturtlemedia.playground.photos.googlephotos.data.ApiResult
 import com.worldturtlemedia.playground.photos.googlephotos.data.asApiError
 import com.worldturtlemedia.playground.photos.googlephotos.data.library.LibraryRepository
@@ -62,6 +63,13 @@ class PhotosListModel : StateViewModel<PhotosListState>(PhotosListState()) {
                     }
                     .safeCollect { result ->
                         val newItems = result.dataOrNull() ?: emptyList()
+
+                        if (result is ApiResult.Fail) {
+                            if (result.error is ApiError.Unauthenticated) {
+                                e {"We are not authenticated..."}
+                                authRepo.signOut()
+                            }
+                        }
 
                         setState {
                             copy(

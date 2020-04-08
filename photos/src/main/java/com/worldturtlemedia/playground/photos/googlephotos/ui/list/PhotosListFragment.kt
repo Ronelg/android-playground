@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.ajalt.timberkt.e
 import com.worldturtlemedia.playground.common.base.ui.BaseFragment
 import com.worldturtlemedia.playground.common.base.ui.viewbinding.viewBinding
-import com.worldturtlemedia.playground.common.base.ui.viewmodel.observeMergedState
 import com.worldturtlemedia.playground.common.ktx.*
 import com.worldturtlemedia.playground.photos.R
 import com.worldturtlemedia.playground.photos.auth.data.GoogleAuthState.*
@@ -84,7 +83,7 @@ class PhotosListFragment : BaseFragment<PhotosListFragmentBinding>(R.layout.phot
     }
 
     private fun renderState(state: PhotosListState) {
-        e {"Rendering state:\nState: $state"}
+        e { "Rendering state:\nState: $state" }
         withBinding {
             mediaTypeFilter.setSelected(state.mediaFilter)
 
@@ -94,7 +93,7 @@ class PhotosListFragment : BaseFragment<PhotosListFragmentBinding>(R.layout.phot
     }
 
     private fun renderAuthState(state: PhotosAuthState) {
-        e {"Rendering auth state:\nAuthState: $state"}
+        e { "Rendering auth state:\nAuthState: $state" }
         withBinding {
             viewAuthError.visibleOrGone = state.auth is Error
             state.auth.errorOrNull?.let { errorMessage ->
@@ -116,15 +115,7 @@ class PhotosListFragment : BaseFragment<PhotosListFragmentBinding>(R.layout.phot
             e { "Took $duration seconds to render ${state.groupedItems.flatMap { it.second }.size} items" }
 
             if (!state.finishedInitialLoad && !state.userHasScrolled) {
-                val position = listAdapter.getPositionOfTargetDate(state.targetDate)
-                if (position != null) {
-                    e { "Scrolling to $position" }
-                    with(binding.recyclerView) {
-                        stopScroll()
-                        layoutManager?.cast<GridLayoutManager>()
-                            ?.scrollToPositionWithOffset(position, 0)
-                    }
-                }
+                scrollToCurrentDay(state.targetDate)
             }
         }
     }
@@ -133,7 +124,7 @@ class PhotosListFragment : BaseFragment<PhotosListFragmentBinding>(R.layout.phot
         layoutManager = createLayoutManager()
         adapter = listAdapter
 
-        this.addOnScrollListener(object: RecyclerView.OnScrollListener() {
+        this.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
 
@@ -151,4 +142,14 @@ class PhotosListFragment : BaseFragment<PhotosListFragmentBinding>(R.layout.phot
                 if (item is MediaItemListItem) 1 else NUMBER_OF_COLUMNS
             }
         }
+
+    private fun scrollToCurrentDay(targetDate: LocalDate) {
+        val position = listAdapter.getPositionOfTargetDate(targetDate) ?: return
+
+        with(binding.recyclerView) {
+            stopScroll()
+            layoutManager?.cast<GridLayoutManager>()
+                ?.scrollToPositionWithOffset(position, 0)
+        }
+    }
 }
