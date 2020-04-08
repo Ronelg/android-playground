@@ -13,8 +13,11 @@ import com.worldturtlemedia.playground.photos.auth.data.GoogleAuthState
 import com.worldturtlemedia.playground.photos.googlephotos.data.ApiResult
 import com.worldturtlemedia.playground.photos.googlephotos.data.asApiError
 import com.worldturtlemedia.playground.photos.googlephotos.data.library.LibraryRepository
+import com.worldturtlemedia.playground.photos.googlephotos.data.dataOrNull
 import com.worldturtlemedia.playground.photos.googlephotos.model.filter.MediaFilter
 import com.worldturtlemedia.playground.photos.googlephotos.model.mediaitem.MediaItem
+import com.worldturtlemedia.playground.photos.googlephotos.model.mediaitem.isPhoto
+import com.worldturtlemedia.playground.photos.googlephotos.model.mediaitem.isVideo
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
@@ -58,7 +61,7 @@ class PhotosListModel : StateViewModel<PhotosListState>(PhotosListState()) {
                         setState { copy(status = exception.asApiError()) }
                     }
                     .safeCollect { result ->
-                        val newItems = if (result is ApiResult.Success) result.data else emptyList()
+                        val newItems = result.dataOrNull() ?: emptyList()
 
                         setState {
                             copy(
@@ -104,6 +107,13 @@ data class PhotosListState(
 
     val groupedItems: List<Pair<LocalDate, List<MediaItem>>>
         get() = items
+            .filter { item ->
+                when (mediaFilter) {
+                    MediaFilter.All -> true
+                    MediaFilter.Video -> item.isVideo
+                    MediaFilter.Photo -> item.isPhoto
+                }
+            }
             .groupBy { item -> item.creationTime.toLocalDate() }
             .ensureKey(targetDate, emptyList())
             .toList()

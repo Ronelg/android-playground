@@ -80,11 +80,7 @@ class PhotosListFragment : BaseFragment<PhotosListFragmentBinding>(R.layout.phot
 
         viewModel.init(args.selectedDate)
         viewModel.onStateChange(owner, ::renderState)
-//        viewModel.observeMergedState(owner, authViewModel) { state, authState ->
-//            renderState(state, authState)
-//        }
-
-        viewModel.onStateChange(owner, { it.groupedItems }) { renderListOnChange(it) }
+        viewModel.onStateChange(owner, { it.groupedItems }, ::renderListOnChange)
     }
 
     private fun renderState(state: PhotosListState) {
@@ -96,19 +92,6 @@ class PhotosListFragment : BaseFragment<PhotosListFragmentBinding>(R.layout.phot
             viewError.setErrorText(state.errorText)
         }
     }
-
-//    private fun renderState(state: PhotosListState, auth: PhotosAuthState) {
-//        e {"Rendering state:\nAuth: $auth\nState: $state"}
-//        renderAuthState(auth)
-//
-//        withBinding {
-//            mediaTypeFilter.setSelected(state.mediaFilter)
-//
-//            authenticatedGroup.visibleOrGone = !state.hasError && authenticatedGroup.visible
-//            viewError.visibleOrGone = state.hasError && auth.auth is Authenticated
-//            viewError.setErrorText(state.errorText)
-//        }
-//    }
 
     private fun renderAuthState(state: PhotosAuthState) {
         e {"Rendering auth state:\nAuthState: $state"}

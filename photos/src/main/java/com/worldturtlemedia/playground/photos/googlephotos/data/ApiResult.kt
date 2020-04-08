@@ -22,3 +22,5 @@ sealed class ApiError(val message: String) {
 }
 
 fun Throwable.asApiError() = ApiResult.Fail(ApiError.Error(this))
+
+fun <T> ApiResult<T>.dataOrNull(): T? = (this as? ApiResult.Success)?.data
