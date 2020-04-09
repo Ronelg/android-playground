@@ -52,7 +52,6 @@ dependencies {
 
     /* UI */
     implementation(Libs.groupie)
-    implementation(Libs.groupie_kotlin_android_extensions)
 
     implementation(Libs.play_services_auth)
 

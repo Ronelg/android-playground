@@ -3,7 +3,6 @@ package com.worldturtlemedia.playground.photos.googlephotos.ui.list.items
 import android.view.View
 import androidx.annotation.DrawableRes
 import coil.api.load
-import com.worldturtlemedia.playground.common.base.ui.groupie.ViewBindingItem
 import com.worldturtlemedia.playground.common.ktx.visibleOrGone
 import com.worldturtlemedia.playground.photos.R
 import com.worldturtlemedia.playground.photos.databinding.MediaItemListItemBinding
@@ -12,8 +11,9 @@ import com.worldturtlemedia.playground.photos.googlephotos.model.mediaitem.Media
 import com.worldturtlemedia.playground.photos.googlephotos.model.mediaitem.Orientation
 import com.worldturtlemedia.playground.photos.googlephotos.model.mediaitem.PhotoItem
 import com.worldturtlemedia.playground.photos.googlephotos.model.mediaitem.VideoItem
+import com.xwray.groupie.viewbinding.BindableItem
 
-sealed class MediaItemListItem : ViewBindingItem<MediaItemListItemBinding>() {
+sealed class MediaItemListItem : BindableItem<MediaItemListItemBinding>() {
 
     override fun getLayout(): Int = R.layout.media_item_list_item
 
@@ -32,7 +32,7 @@ sealed class MediaItemListItem : ViewBindingItem<MediaItemListItemBinding>() {
         }
     }
 
-    override fun inflate(itemView: View): MediaItemListItemBinding = bind(itemView)
+    override fun initializeViewBinding(view: View): MediaItemListItemBinding = bind(view)
 
     override fun bind(viewBinding: MediaItemListItemBinding, position: Int) {
         with(viewBinding) {
@@ -50,7 +50,7 @@ sealed class MediaItemListItem : ViewBindingItem<MediaItemListItemBinding>() {
 }
 
 data class PhotoListItem(
-    override val mediaItem: MediaItem,
+    override val mediaItem: PhotoItem,
     override val isSelected: Boolean
 ) : MediaItemListItem() {
 
@@ -58,7 +58,7 @@ data class PhotoListItem(
 }
 
 data class VideoListItem(
-    override val mediaItem: MediaItem,
+    override val mediaItem: VideoItem,
     override val isSelected: Boolean
 ) : MediaItemListItem() {
 

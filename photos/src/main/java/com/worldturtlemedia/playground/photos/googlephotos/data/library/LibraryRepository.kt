@@ -135,9 +135,13 @@ class LibraryRepository(
         e { "Starting after fetch!" }
 
         val rangeStart = targetDate.plusDays(1)
+        if (rangeStart.isAfter(LocalDate.now())) return@flow
+
         val daysUntilToday = Days.daysBetween(rangeStart, LocalDate.now()).days
         val daysToFetch = if (daysUntilToday < daysAfter) daysUntilToday else daysAfter
 
+        // TODO: Sometimes this is setting the start after the end
+        // When it reaches the current day
         val cached = mediaItemCache.getAllWithin(rangeStart, rangeStart.plusDays(daysToFetch))
         emit(ApiResult.Success(cached))
 

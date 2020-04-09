@@ -15,6 +15,8 @@ object Versions {
     const val org_jetbrains_kotlinx_kotlinx_coroutines: String = "1.3.5"
              // available: "1.3.5-1.4-M1-release-99"
 
+    const val com_github_lisawray_groupie: String = "2.8.0"
+
     const val org_jetbrains_kotlin: String = "1.3.71"
 
     const val androidx_navigation: String = "2.2.1"
@@ -25,13 +27,11 @@ object Versions {
 
     const val androidx_room: String = "2.2.5"
 
-    const val com_xwray: String = "2.7.2"
-
-    const val io_grpc: String = "1.28.0"
+    const val io_grpc: String = "1.28.0" // available: "1.28.1"
 
     const val com_google_android_play_core_ktx: String = "1.7.0"
 
-    const val com_android_tools_build_gradle: String = "3.6.1"
+    const val com_android_tools_build_gradle: String = "3.6.1" // available: "3.6.2"
 
     const val androidx_core_core_ktx: String = "1.2.0"
 
@@ -39,7 +39,7 @@ object Versions {
 
     const val inline_activity_result_kotlin: String = "1.0.3"
 
-    const val google_photos_library_client: String = "1.4.0"
+    const val google_photos_library_client: String = "1.4.0" // available: "1.5.0"
 
     const val firebase_crashlytics_gradle: String = "2.0.0-beta02"
 
@@ -51,11 +51,9 @@ object Versions {
 
     const val firebase_config_ktx: String = "19.1.3"
 
-    const val firebase_analytics: String = "17.2.3"
+    const val firebase_analytics: String = "17.2.3" // available: "17.3.0"
 
-    const val leakcanary_android: String = "2.2"
-
-    const val play_services_auth: String = "17.0.0"
+    const val play_services_auth: String = "17.0.0" // available: "18.0.0"
 
     const val constraintlayout: String = "1.1.3"
 
@@ -63,13 +61,13 @@ object Versions {
 
     const val activity_ktx: String = "1.1.0"
 
-    const val fragment_ktx: String = "1.2.3"
+    const val fragment_ktx: String = "1.2.3" // available: "1.2.4"
 
     const val recyclerview: String = "1.1.0"
 
-    const val lint_gradle: String = "26.6.1"
+    const val lint_gradle: String = "26.6.1" // available: "26.6.2"
 
-    const val viewbinding: String = "3.6.1"
+    const val viewbinding: String = "3.6.1" // available: "3.6.2"
 
     const val appcompat: String = "1.1.0"
 
@@ -87,7 +85,7 @@ object Versions {
 
     const val vector: String = "0.6.0" // available: "0.6.1"
 
-    const val aapt2: String = "3.6.1-6040484"
+    const val aapt2: String = "3.6.1-6040484" // available: "3.6.2-6040484"
 
     const val coil: String = "0.9.5"
 

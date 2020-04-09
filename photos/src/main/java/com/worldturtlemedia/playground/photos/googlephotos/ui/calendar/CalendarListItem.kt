@@ -1,8 +1,6 @@
 package com.worldturtlemedia.playground.photos.googlephotos.ui.calendar
 
 import android.view.View
-import com.github.ajalt.timberkt.e
-import com.worldturtlemedia.playground.common.base.ui.groupie.ViewBindingItem
 import com.worldturtlemedia.playground.common.ktx.context
 import com.worldturtlemedia.playground.common.ktx.string
 import com.worldturtlemedia.playground.common.ktx.toUpperCase
@@ -10,17 +8,17 @@ import com.worldturtlemedia.playground.common.ktx.visibleOrGone
 import com.worldturtlemedia.playground.photos.R
 import com.worldturtlemedia.playground.photos.databinding.CalenderListItemBinding
 import com.worldturtlemedia.playground.photos.databinding.CalenderListItemBinding.bind
-import org.joda.time.DateTime
+import com.xwray.groupie.viewbinding.BindableItem
 import org.joda.time.LocalDate
 
 data class CalendarListItem(
     val date: LocalDate,
     private val isToday: Boolean
-) : ViewBindingItem<CalenderListItemBinding>() {
+) : BindableItem<CalenderListItemBinding>() {
 
     override fun getLayout(): Int = R.layout.calender_list_item
 
-    override fun inflate(itemView: View): CalenderListItemBinding = bind(itemView)
+    override fun initializeViewBinding(view: View): CalenderListItemBinding = bind(view)
 
     override fun bind(viewBinding: CalenderListItemBinding, position: Int) {
         with(viewBinding) {

@@ -42,7 +42,6 @@ class BidirectionalInfiniteScrollListener(
 
     private fun checkIfLoadTop() {
         val firstVisibleItemPosition = layoutManager.findFirstCompletelyVisibleItemPosition()
-        e {"checkIfLoadTop: firstVisibleItemPosition = $firstVisibleItemPosition"}
         val needsToLoadMore = (firstVisibleItemPosition - visibleThreshold) <= 0
         if (!isLoadingTop && needsToLoadMore) {
             isLoadingTop = true

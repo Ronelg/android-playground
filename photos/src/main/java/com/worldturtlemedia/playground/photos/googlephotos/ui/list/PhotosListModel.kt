@@ -5,13 +5,17 @@ import com.github.ajalt.timberkt.e
 import com.worldturtlemedia.playground.common.base.ui.viewmodel.State
 import com.worldturtlemedia.playground.common.base.ui.viewmodel.StateViewModel
 import com.worldturtlemedia.playground.common.base.ui.viewmodel.launchIO
+import com.worldturtlemedia.playground.common.core.SingleEvent
 import com.worldturtlemedia.playground.common.ktx.cast
 import com.worldturtlemedia.playground.common.ktx.ensureKey
 import com.worldturtlemedia.playground.common.ktx.mergeDistinct
 import com.worldturtlemedia.playground.common.ktx.safeCollect
 import com.worldturtlemedia.playground.photos.auth.data.GoogleAuthRepoFactory
 import com.worldturtlemedia.playground.photos.auth.data.GoogleAuthState
-import com.worldturtlemedia.playground.photos.googlephotos.data.*
+import com.worldturtlemedia.playground.photos.googlephotos.data.ApiError
+import com.worldturtlemedia.playground.photos.googlephotos.data.ApiResult
+import com.worldturtlemedia.playground.photos.googlephotos.data.asApiError
+import com.worldturtlemedia.playground.photos.googlephotos.data.dataOrNull
 import com.worldturtlemedia.playground.photos.googlephotos.data.library.LibraryRepository
 import com.worldturtlemedia.playground.photos.googlephotos.model.filter.MediaFilter
 import com.worldturtlemedia.playground.photos.googlephotos.model.mediaitem.MediaItem
@@ -91,7 +95,8 @@ class PhotosListModel : StateViewModel<PhotosListState>(PhotosListState()) {
     }
 
     fun changeMediaType(type: MediaFilter) = setState {
-        copy(mediaFilter = type)
+        if (mediaFilter.peek() == type) null
+        else copy(mediaFilter = SingleEvent(type))
     }
 
     fun setUserScrolled() = setState {
@@ -146,7 +151,7 @@ class PhotosListModel : StateViewModel<PhotosListState>(PhotosListState()) {
 data class PhotosListState(
     val initialized: Boolean = false,
     val targetDate: LocalDate = LocalDate.now(),
-    val mediaFilter: MediaFilter = MediaFilter.All,
+    val mediaFilter: SingleEvent<MediaFilter> = SingleEvent(MediaFilter.All),
     val items: List<MediaItem> = emptyList(),
     val finishedInitialLoad: Boolean = false,
     val initialLoadStatus: ApiResult<List<MediaItem>>? = null,
@@ -161,18 +166,8 @@ data class PhotosListState(
     val errorText: String?
         get() = initialLoadStatus?.cast<ApiResult.Fail>()?.error?.message
 
-    // TODO: The filtering on a large list causes it to be verrrrrrry slow
-    // TODO: Need to look into truncating the list at a certain size.
-    // TODO: Since we cache on the backend, it shouldn't be a problem
     val groupedItems: List<Pair<LocalDate, List<MediaItem>>>
         get() = items
-            .filter { item ->
-                when (mediaFilter) {
-                    MediaFilter.All -> true
-                    MediaFilter.Video -> item.isVideo
-                    MediaFilter.Photo -> item.isPhoto
-                }
-            }
             .groupBy { item -> item.creationTime.toLocalDate() }
             .ensureKey(targetDate, emptyList())
             .toList()
@@ -181,6 +176,6 @@ data class PhotosListState(
     override fun toString(): String {
         val statustext =
             if (initialLoadStatus is ApiResult.Success) "Success(items=${initialLoadStatus.data.size})" else initialLoadStatus.toString()
-        return "PhotoListState(init=$initialized,targetDate=$targetDate,finishedInitialLoad=$finishedInitialLoad,userHasScrolled=$userHasScrolled,status=$statustext"
+        return "PhotoListState(init=$initialized,targetDate=$targetDate,items=${items.size},finishedInitialLoad=$finishedInitialLoad,userHasScrolled=$userHasScrolled,beforeLoad=${loadingBefore},afterLoad=${loadingAfter},status=$statustext"
     }
 }

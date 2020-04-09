@@ -21,6 +21,18 @@ object Libs {
             Versions.org_jetbrains_kotlinx_kotlinx_coroutines
 
     /**
+     * https://github.com/lisawray/groupie
+     */
+    const val groupie: String = "com.github.lisawray.groupie:groupie:" +
+            Versions.com_github_lisawray_groupie
+
+    /**
+     * https://github.com/lisawray/groupie
+     */
+    const val groupie_viewbinding: String = "com.github.lisawray.groupie:groupie-viewbinding:" +
+            Versions.com_github_lisawray_groupie
+
+    /**
      * https://kotlinlang.org/
      */
     const val kotlin_android_extensions: String =
@@ -134,17 +146,6 @@ object Libs {
     const val room_runtime: String = "androidx.room:room-runtime:" + Versions.androidx_room
 
     /**
-     * https://github.com/lisawray/groupie
-     */
-    const val groupie: String = "com.xwray:groupie:" + Versions.com_xwray
-
-    /**
-     * https://github.com/lisawray/groupie
-     */
-    const val groupie_kotlin_android_extensions: String =
-            "com.xwray:groupie-kotlin-android-extensions:" + Versions.com_xwray
-
-    /**
      * https://github.com/grpc/grpc-java
      */
     const val grpc_netty: String = "io.grpc:grpc-netty:" + Versions.io_grpc
@@ -215,12 +216,6 @@ object Libs {
 
     const val firebase_analytics: String = "com.google.firebase:firebase-analytics:" +
             Versions.firebase_analytics
-
-    /**
-     * http://github.com/square/leakcanary/
-     */
-    const val leakcanary_android: String = "com.squareup.leakcanary:leakcanary-android:" +
-            Versions.leakcanary_android
 
     const val play_services_auth: String = "com.google.android.gms:play-services-auth:" +
             Versions.play_services_auth

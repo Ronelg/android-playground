@@ -73,7 +73,7 @@ dependencies {
 
     /* UI */
     implementation(Libs.groupie)
-    implementation(Libs.groupie_kotlin_android_extensions)
+    implementation(Libs.groupie_viewbinding)
     implementation(Libs.coil)
     implementation(Libs.inline_activity_result_kotlin)
     implementation("com.afollestad:drag-select-recyclerview:2.4.0")
