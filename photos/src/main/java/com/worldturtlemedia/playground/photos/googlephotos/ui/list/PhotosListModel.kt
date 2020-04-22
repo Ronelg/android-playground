@@ -6,10 +6,7 @@ import com.worldturtlemedia.playground.common.base.ui.viewmodel.State
 import com.worldturtlemedia.playground.common.base.ui.viewmodel.StateViewModel
 import com.worldturtlemedia.playground.common.base.ui.viewmodel.launchIO
 import com.worldturtlemedia.playground.common.core.SingleEvent
-import com.worldturtlemedia.playground.common.ktx.cast
-import com.worldturtlemedia.playground.common.ktx.ensureKey
-import com.worldturtlemedia.playground.common.ktx.mergeDistinct
-import com.worldturtlemedia.playground.common.ktx.safeCollect
+import com.worldturtlemedia.playground.common.ktx.*
 import com.worldturtlemedia.playground.photos.auth.data.GoogleAuthRepoFactory
 import com.worldturtlemedia.playground.photos.auth.data.GoogleAuthState
 import com.worldturtlemedia.playground.photos.googlephotos.data.ApiError
@@ -145,7 +142,7 @@ class PhotosListModel : StateViewModel<PhotosListState>(PhotosListState()) {
         }
 
     private fun List<MediaItem>.mergeNewResults(list: List<MediaItem>) =
-        mergeDistinct(list).sortedByDescending { item -> item.creationTime }
+        merge(list).distinctBy { it.id }.sortedByDescending { item -> item.creationTime }
 }
 
 data class PhotosListState(

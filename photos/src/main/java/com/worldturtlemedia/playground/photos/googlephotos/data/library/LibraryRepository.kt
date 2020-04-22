@@ -8,6 +8,8 @@ import com.worldturtlemedia.playground.photos.googlephotos.data.emitSuccess
 import com.worldturtlemedia.playground.photos.googlephotos.model.filter.DateFilter
 import com.worldturtlemedia.playground.photos.googlephotos.model.filter.buildFilters
 import com.worldturtlemedia.playground.photos.googlephotos.model.mediaitem.MediaItem
+import com.worldturtlemedia.playground.photos.googlephotos.model.mediaitem.isPhoto
+import com.worldturtlemedia.playground.photos.googlephotos.model.mediaitem.isVideo
 import com.worldturtlemedia.playground.photos.googlephotos.model.mediaitem.toModels
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
@@ -78,15 +80,12 @@ class LibraryRepository(
 
         val cached = mediaItemCache.getAllWithin(rangeStart, rangeEnd)
         emit(ApiResult.Success(cached))
-        if (cached.size >= minimumItems) {
-            return@flow
-        }
 
         e { "Starting before fetch! Call #${callCount + 1} with $previousItemCount existing items" }
         val filter = buildFilters(DateFilter.range(rangeStart, rangeEnd))
         val result = safeApiCall { client ->
             val pages = client.searchMediaItems(filter).iteratePages()
-            val allItems = cached.toMutableList()
+            val allItems = mutableListOf<MediaItem>()
             for (page in pages) {
                 coroutineContext.ensureActive()
 
@@ -109,7 +108,7 @@ class LibraryRepository(
         val itemsCount = previousItemCount + result.data.size
         if (callCount >= maxCalls && itemsCount < minimumItems) {
             e { "Too many retries with not enough items... stopping" }
-        } else if (itemsCount >= minimumItems) {
+        } else if (itemsCount + cached.size >= minimumItems) {
             e { "Met the minimum size! ${result.data.size} with ${callCount + 1} calls" }
         } else {
             e { "Did not meet minimum items! Attempting to recurse..." }
@@ -167,8 +166,6 @@ class LibraryRepository(
                     allItems.addAll(items)
                     mediaItemCache.storeItems(items)
                     emit(ApiResult.Success(items))
-
-                    if (allItems.size >= minimumItems) break
                 }
 
                 allItems

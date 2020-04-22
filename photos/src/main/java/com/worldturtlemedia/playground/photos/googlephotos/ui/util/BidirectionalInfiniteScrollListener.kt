@@ -3,13 +3,18 @@ package com.worldturtlemedia.playground.photos.googlephotos.ui.util
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.ajalt.timberkt.e
+import com.worldturtlemedia.playground.common.ktx.cast
 
 typealias OnLoadMore = () -> Unit
 
 // TODO: Investigate using the paging library instead?
 class BidirectionalInfiniteScrollListener(
-    private val layoutManager: GridLayoutManager
+    private val layoutManagerProvider: () -> RecyclerView.LayoutManager?
 ) : RecyclerView.OnScrollListener() {
+
+    private val layoutManager: GridLayoutManager
+        get() = layoutManagerProvider()?.cast<GridLayoutManager>()
+            ?: throw IllegalStateException("Unable to get the GridLayoutManager")
 
     private val visibleThreshold: Int = 5* layoutManager.spanCount
 

@@ -50,17 +50,8 @@ class PhotosListFragment : BaseFragment<PhotosListFragmentBinding>(R.layout.phot
 
     private val listAdapter = MediaItemListAdapter()
 
-    private val listLayoutManager by lazy {
-        createGridLayoutManager(requireContext(), NUMBER_OF_COLUMNS) {
-            buildSpanSizeLookup { position ->
-                val item = listAdapter.getItem(position)
-                if (item is MediaItemListItem) 1 else NUMBER_OF_COLUMNS
-            }
-        }
-    }
-
     private val listInfiniteScrollListener by lazy {
-        BidirectionalInfiniteScrollListener(listLayoutManager)
+        BidirectionalInfiniteScrollListener(binding.recyclerView::getLayoutManager)
     }
 
     override fun setupViews() = withBinding {
@@ -138,7 +129,7 @@ class PhotosListFragment : BaseFragment<PhotosListFragmentBinding>(R.layout.phot
     }
 
     private fun setupRecyclerView() = with(binding.recyclerView) {
-        layoutManager = listLayoutManager
+        layoutManager = createListLayoutManager()
         adapter = listAdapter
         setRecycledViewPool(viewPool)
 
@@ -150,6 +141,14 @@ class PhotosListFragment : BaseFragment<PhotosListFragmentBinding>(R.layout.phot
 
         addOnScrollStateDragging { viewModel.setUserScrolled() }
     }
+
+    private fun createListLayoutManager(): GridLayoutManager =
+        createGridLayoutManager(requireContext(), NUMBER_OF_COLUMNS) {
+            buildSpanSizeLookup { position ->
+                val item = listAdapter.getItem(position)
+                if (item is MediaItemListItem) 1 else NUMBER_OF_COLUMNS
+            }
+        }
 
     private fun scrollToCurrentDayIfNeeded(state: PhotosListState) {
         if (state.finishedInitialLoad || state.userHasScrolled) return

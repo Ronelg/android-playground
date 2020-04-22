@@ -12,9 +12,10 @@ import kotlinx.coroutines.channels.consumeEach
 
 interface State
 
-abstract class StateViewModel<S : State>(initialState: S) : ViewModel() {
-
+abstract class StateViewModel<S : State>(
+    initialState: S,
     protected open val isDebugMode: Boolean = false
+) : ViewModel() {
 
     /**
      * Create a Single source of truth for the state by hiding the mutable LiveData.

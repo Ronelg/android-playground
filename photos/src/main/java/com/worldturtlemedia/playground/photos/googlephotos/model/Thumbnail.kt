@@ -7,4 +7,4 @@ fun createMediaThumbnailUrl(
     url: String,
     width: Int = MEDIA_THUMBNAIL_WIDTH,
     height: Int = MEDIA_THUMBNAIL_HEIGHT
-) = "$url=w$width-h$height"
+) = "$url=w$width-h$height-d"
